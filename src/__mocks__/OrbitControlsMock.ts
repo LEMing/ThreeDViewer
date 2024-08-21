@@ -1,10 +1,8 @@
-export class OrbitControls {
-  update = jest.fn();
-  enableDamping = true;
-  dampingFactor = 0.25;
-  enableZoom = true;
-
-  constructor() {
-    // Add any necessary constructor logic
-  }
-}
+export const OrbitControls = jest.fn().mockImplementation(() => ({
+  enableDamping: false,
+  dampingFactor: 0,
+  enableZoom: false,
+  update: jest.fn(),
+  addEventListener: jest.fn(),
+  removeEventListener: jest.fn(),
+}));

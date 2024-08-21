@@ -13,29 +13,13 @@ import {
   cleanupScene,
 } from '../simpleViewerUtils';
 
+
 jest.mock('three', () => {
   const originalThree = jest.requireActual('three');
   return {
     ...originalThree,
     WebGLRenderer: jest.fn(() => mockRenderer),
   };
-});
-
-jest.mock('three/examples/jsm/controls/OrbitControls', () => {
-  return {
-    OrbitControls: jest.fn().mockImplementation(() => {
-      return {
-        update: jest.fn(),
-        enableDamping: true,
-        dampingFactor: 0.25,
-        enableZoom: true,
-      };
-    }),
-  };
-});
-
-afterAll(() => {
-  jest.resetAllMocks();
 });
 
 describe('Scene setup functions', () => {
@@ -68,7 +52,7 @@ describe('Scene setup functions', () => {
 
   test('addHelpers adds grid helper and plane to the scene', () => {
     const scene = new THREE.Scene();
-    addHelpers(scene);
+    addHelpers(scene, new THREE.Object3D());
     expect(scene.children.some((obj) => obj instanceof THREE.GridHelper)).toBe(true);
     expect(scene.children.some((obj) => obj instanceof THREE.Mesh && obj.geometry instanceof THREE.PlaneGeometry)).toBe(
       true,

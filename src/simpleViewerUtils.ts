@@ -1,6 +1,6 @@
-import React from 'react';
+import React, { useRef, useEffect, useState } from 'react';
 import * as THREE from 'three';
-import {OrbitControls} from 'three/examples/jsm/controls/OrbitControls';
+import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls';
 
 const UNITS_PER_INCH = 1;
 const UNITS_PER_FOOT = 12 * UNITS_PER_INCH;
@@ -18,10 +18,11 @@ export const initializeCamera = (aspectRatio: number) => {
 };
 
 export const initializeRenderer = () => {
-  const renderer = new THREE.WebGLRenderer({antialias: true});
+  const renderer = new THREE.WebGLRenderer({ antialias: true });
   renderer.setPixelRatio(window.devicePixelRatio);
   renderer.shadowMap.enabled = true;
-  renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+  renderer.shadowMap.type = THREE.VSMShadowMap;
+
   return renderer;
 };
 
@@ -36,8 +37,8 @@ export const addLighting = (scene: THREE.Scene) => {
   directionalLight.position.set(6 * UNITS_PER_FOOT, 6 * UNITS_PER_FOOT, 6 * UNITS_PER_FOOT);
   directionalLight.castShadow = true;
 
-  directionalLight.shadow.mapSize.width = 2048;
-  directionalLight.shadow.mapSize.height = 2048;
+  directionalLight.shadow.mapSize.width = 4096;
+  directionalLight.shadow.mapSize.height = 4096;
 
   directionalLight.shadow.camera.near = 0.5;
   directionalLight.shadow.camera.far = 50 * UNITS_PER_FOOT;
@@ -46,13 +47,14 @@ export const addLighting = (scene: THREE.Scene) => {
   directionalLight.shadow.camera.top = 10 * UNITS_PER_FOOT;
   directionalLight.shadow.camera.bottom = -10 * UNITS_PER_FOOT;
 
-  directionalLight.shadow.bias = -0.0001;
+  directionalLight.shadow.bias = -0.001;
 
-  directionalLight.shadow.radius = 0.25;
+  directionalLight.shadow.radius = 1;
 
   scene.add(directionalLight);
 };
-export const addHelpers = (scene: THREE.Scene) => {
+
+export const addHelpers = (scene: THREE.Scene, object: THREE.Object3D | null) => {
   const gridHelper = new THREE.GridHelper(6 * UNITS_PER_FOOT, 6);
   scene.add(gridHelper);
 
@@ -62,9 +64,14 @@ export const addHelpers = (scene: THREE.Scene) => {
   });
   const plane = new THREE.Mesh(planeGeometry, planeMaterial);
   plane.rotation.x = -Math.PI / 2;
-  plane.position.y = -0.01;
+  plane.position.y = 0;
   plane.receiveShadow = true;
   scene.add(plane);
+
+  if (object) {
+    const boxHelper = new THREE.BoxHelper(object, 0xff0000); // Red box around the object
+    scene.add(boxHelper);
+  }
 };
 
 export const updateSize = (
@@ -105,7 +112,7 @@ type THREEBase = {
 };
 
 export const setupScene = (threeBase: THREEBase, object: THREE.Object3D | null) => {
-  const {mountRef, rendererRef, cameraRef} = threeBase;
+  const { mountRef, rendererRef, cameraRef } = threeBase;
   if (!mountRef.current) throw new Error('Mount div is not ready');
   const scene = initializeScene();
   const camera = initializeCamera(mountRef.current.clientWidth / mountRef.current.clientHeight);
@@ -118,12 +125,18 @@ export const setupScene = (threeBase: THREEBase, object: THREE.Object3D | null) 
 
   if (object) {
     object.castShadow = true; // Ensure the object casts shadows
-    object.position.y += new THREE.Box3().setFromObject(object).max.y / 2;
+    object.traverse((child) => {
+      if (child instanceof THREE.Mesh) {
+        child.castShadow = true;
+        child.receiveShadow = true;
+      }
+    });
+    object.position.y = Math.round(new THREE.Box3().setFromObject(object).max.y / 2);
     scene.add(object);
   }
 
   addLighting(scene);
-  addHelpers(scene);
+  addHelpers(scene, object);
 
   const controls = new OrbitControls(camera, renderer.domElement);
   controls.enableDamping = true;
@@ -132,19 +145,40 @@ export const setupScene = (threeBase: THREEBase, object: THREE.Object3D | null) 
 
   fitCameraToObject(scene, camera);
 
+  // State to track whether the scene is active
+  let isSceneActive = true;
+
+  const startRendering = () => {
+    if (!isSceneActive) {
+      isSceneActive = true;
+      animate();
+    }
+  };
+
+  const stopRendering = () => {
+    isSceneActive = false;
+  };
+
+  controls.addEventListener('start', startRendering);
+  controls.addEventListener('end', stopRendering);
+
   const animate = () => {
+    if (!isSceneActive) return; // Stop the loop if the scene is inactive
+
     requestAnimationFrame(animate);
     controls.update();
 
-    // Update shadow map
     if (object) {
       renderer.shadowMap.needsUpdate = true;
     }
 
     renderer.render(scene, camera);
   };
+
+  // Start rendering initially
   animate();
-  return {scene, camera, renderer, controls};
+
+  return { scene, camera, renderer, controls };
 };
 
 export const cleanupScene = (

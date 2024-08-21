@@ -12,7 +12,15 @@ export default defineConfig({
       insertTypesEntry: true,
     }),
   ],
+  server: {
+    watch: {
+      ignored: ['!**/*.ts', '!**/*.tsx'],
+    },
+  },
   build: {
+    watch: {
+      include: ['src/**/*.ts', 'src/**/*.tsx'],
+    },
     lib: {
       entry: resolve(__dirname, 'src/index.ts'),
       name: 'SimpleViewer',
