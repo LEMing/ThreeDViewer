@@ -13,7 +13,8 @@ const App = () => {
   useEffect(() => {
     const MODEL_URL = 'https://modelviewer.dev/shared-assets/models/Astronaut.glb';
     const loader = new GLTFLoader();
-    loadModel(MODEL_URL, loader as LoaderGLB).then(setObject);
+    const targetSize = new THREE.Vector3(24, 24, 24);
+    loadModel(MODEL_URL, loader as LoaderGLB, targetSize).then(setObject);
   }, []);
 
   return (

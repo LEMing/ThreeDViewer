@@ -1,13 +1,16 @@
 import * as THREE from 'three';
+import Resizer from './Resizer';
 import {LoaderGLB} from './types';
 
-export const loadModel = (url: string, loader: LoaderGLB): Promise<THREE.Object3D> => {
+export const loadModel = (url: string, loader: LoaderGLB, targetSize?: THREE.Vector3): Promise<THREE.Object3D> => {
   return new Promise((resolve, reject) => {
     loader.load(
       url,
       (gltf) => {
         const model = gltf.scene;
-        model.scale.setScalar(10);
+        if (targetSize) {
+          new Resizer().resize(model, targetSize);
+        }
         resolve(model);
       },
       undefined,

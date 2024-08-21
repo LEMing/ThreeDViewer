@@ -1,7 +1,6 @@
 import * as THREE from 'three';
 import { loadModel } from '../loadModel';
 
-
 describe('loadModel', () => {
   it('should load a model and return a THREE.Object3D', async () => {
     const model = await loadModel(
