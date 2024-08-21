@@ -1,36 +1,19 @@
 import React, { useEffect, useState } from 'react';
 import ReactDOM from 'react-dom/client';
+import {GLTFLoader} from 'three/examples/jsm/loaders/GLTFLoader';
+import {loadModel} from './loadModel';
 import SimpleViewer from './SimpleViewer';
 import * as THREE from 'three';
-import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader';
+import {LoaderGLB} from './types';
 
-const MODEL_URL = 'https://modelviewer.dev/shared-assets/models/Astronaut.glb'; // URL of the GLB model
-
-const loadModel = (): Promise<THREE.Object3D> => {
-  return new Promise((resolve, reject) => {
-    const loader = new GLTFLoader();
-    loader.load(
-      MODEL_URL,
-      (gltf) => {
-        const model = gltf.scene;
-        model.castShadow = true; // Ensure the model casts shadows
-        model.scale.setScalar(10); // Scale the model down
-        resolve(model);
-      },
-      undefined,
-      (error) => {
-        console.error('An error occurred while loading the model:', error);
-        reject(error);
-      }
-    );
-  });
-};
 
 const App = () => {
   const [object, setObject] = useState<THREE.Object3D | null>(null);
 
   useEffect(() => {
-    loadModel().then(setObject);
+    const MODEL_URL = 'https://modelviewer.dev/shared-assets/models/Astronaut.glb';
+    const loader = new GLTFLoader();
+    loadModel(MODEL_URL, loader as LoaderGLB).then(setObject);
   }, []);
 
   return (
