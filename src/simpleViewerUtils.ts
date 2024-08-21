@@ -1,6 +1,7 @@
 import React, { useRef, useEffect, useState } from 'react';
 import * as THREE from 'three';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls';
+import FloorAligner from './FloorAligner';
 
 const UNITS_PER_INCH = 1;
 const UNITS_PER_FOOT = 12 * UNITS_PER_INCH;
@@ -54,7 +55,7 @@ export const addLighting = (scene: THREE.Scene) => {
   scene.add(directionalLight);
 };
 
-export const addHelpers = (scene: THREE.Scene, object: THREE.Object3D | null) => {
+export const addHelpers = (scene: THREE.Scene, object?: THREE.Object3D | null) => {
   const gridHelper = new THREE.GridHelper(6 * UNITS_PER_FOOT, 6);
   scene.add(gridHelper);
 
@@ -126,17 +127,15 @@ export const setupScene = (threeBase: THREEBase, object: THREE.Object3D | null) 
   if (object) {
     object.castShadow = true; // Ensure the object casts shadows
     object.traverse((child) => {
-      if (child instanceof THREE.Mesh) {
-        child.castShadow = true;
-        child.receiveShadow = true;
-      }
+      child.castShadow = true;
+      child.receiveShadow = true;
     });
-    object.position.y = Math.round(new THREE.Box3().setFromObject(object).max.y / 2);
+    new FloorAligner(object).alignToFloor();
     scene.add(object);
   }
 
   addLighting(scene);
-  addHelpers(scene, object);
+  addHelpers(scene);
 
   const controls = new OrbitControls(camera, renderer.domElement);
   controls.enableDamping = true;
