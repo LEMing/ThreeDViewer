@@ -1,3 +1,5 @@
+import * as THREE from 'three';
+
 export const OrbitControls = jest.fn().mockImplementation(() => ({
   enableDamping: false,
   dampingFactor: 0,
@@ -5,4 +7,5 @@ export const OrbitControls = jest.fn().mockImplementation(() => ({
   update: jest.fn(),
   addEventListener: jest.fn(),
   removeEventListener: jest.fn(),
+  target: new THREE.Vector3()
 }));
