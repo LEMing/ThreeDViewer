@@ -63,10 +63,12 @@ describe('Scene setup functions', () => {
     const renderer = new THREE.WebGLRenderer();
     const camera = new THREE.PerspectiveCamera();
     const mountRef = {current: document.createElement('div')};
+    const scene = new THREE.Scene();
+
     Object.defineProperty(mountRef.current, 'clientWidth', {value: 800});
     Object.defineProperty(mountRef.current, 'clientHeight', {value: 600});
 
-    updateSize(renderer, camera, mountRef);
+    updateSize(renderer, camera, mountRef, scene);
 
     expect(renderer.getSize(new THREE.Vector2()).width).toBe(0);
     expect(renderer.getSize(new THREE.Vector2()).height).toBe(0);
@@ -91,9 +93,15 @@ describe('Scene setup functions', () => {
     const mountRef = {current: document.createElement('div')};
     const rendererRef = {current: null};
     const cameraRef = {current: null};
+    const sceneRef = {current: null};
     const object = new THREE.Object3D();
 
-    const {scene, camera, renderer, controls} = setupScene({mountRef, rendererRef, cameraRef}, object);
+    const {
+      scene,
+      camera,
+      renderer,
+      controls
+    } = setupScene({mountRef, rendererRef, cameraRef, sceneRef}, object);
 
     expect(scene).toBeInstanceOf(THREE.Scene);
     expect(camera).toBeInstanceOf(THREE.PerspectiveCamera);

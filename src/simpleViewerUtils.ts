@@ -79,6 +79,7 @@ export const updateSize = (
   renderer: THREE.WebGLRenderer,
   camera: THREE.PerspectiveCamera,
   mountRef: React.RefObject<HTMLDivElement>,
+  scene: THREE.Scene,
 ) => {
   if (mountRef.current) {
     const width = mountRef.current.clientWidth;
@@ -86,6 +87,7 @@ export const updateSize = (
     renderer.setSize(width, height);
     camera.aspect = width / height;
     camera.updateProjectionMatrix();
+    renderer.render(scene, camera);
   }
 };
 
@@ -110,10 +112,11 @@ type THREEBase = {
   mountRef: React.RefObject<HTMLDivElement>;
   rendererRef: React.MutableRefObject<THREE.WebGLRenderer | null>;
   cameraRef: React.MutableRefObject<THREE.PerspectiveCamera | null>;
+  sceneRef: React.MutableRefObject<THREE.Scene | null>;
 };
 
 export const setupScene = (threeBase: THREEBase, object: THREE.Object3D | null) => {
-  const { mountRef, rendererRef, cameraRef } = threeBase;
+  const { mountRef, sceneRef, rendererRef, cameraRef } = threeBase;
   if (!mountRef.current) throw new Error('Mount div is not ready');
   const scene = initializeScene();
   const camera = initializeCamera(mountRef.current.clientWidth / mountRef.current.clientHeight);
@@ -121,6 +124,7 @@ export const setupScene = (threeBase: THREEBase, object: THREE.Object3D | null) 
 
   rendererRef.current = renderer;
   cameraRef.current = camera;
+  sceneRef.current = scene;
 
   mountRef.current.appendChild(renderer.domElement);
 
@@ -145,7 +149,7 @@ export const setupScene = (threeBase: THREEBase, object: THREE.Object3D | null) 
   fitCameraToObject(scene, camera);
 
   // State to track whether the scene is active
-  let isSceneActive = true;
+  let isSceneActive = false;
 
   const startRendering = () => {
     if (!isSceneActive) {
@@ -163,7 +167,6 @@ export const setupScene = (threeBase: THREEBase, object: THREE.Object3D | null) 
 
   const animate = () => {
     if (!isSceneActive) return; // Stop the loop if the scene is inactive
-
     requestAnimationFrame(animate);
     controls.update();
 
@@ -174,7 +177,6 @@ export const setupScene = (threeBase: THREEBase, object: THREE.Object3D | null) 
     renderer.render(scene, camera);
   };
 
-  // Start rendering initially
   animate();
 
   return { scene, camera, renderer, controls };
