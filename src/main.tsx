@@ -11,7 +11,7 @@ const App = () => {
   const [object, setObject] = useState<THREE.Object3D | null>(null);
 
   useEffect(() => {
-    const MODEL_URL = 'https://modelviewer.dev/shared-assets/models/Astronaut.glb';
+    const MODEL_URL = 'https://modelviewer.dev/shared-assets/models/RobotExpressive.glb';
     const loader = new GLTFLoader();
     const targetSize = new THREE.Vector3(24, 24, 24);
     loadModel(MODEL_URL, loader as LoaderGLB, targetSize).then(setObject);

@@ -2,7 +2,10 @@ import React, {useEffect, useRef} from 'react';
 
 import * as THREE from 'three';
 
-import {cleanupScene, setupScene, updateSize} from './simpleViewerUtils';
+
+import {cleanupScene} from './ThreeSceneSetup/cleanupScene';
+import {setupScene} from './ThreeSceneSetup/setupScene';
+import {updateSize} from './ThreeSceneSetup/updateSize';
 import {throttle} from './utils';
 
 interface SimpleViewerProps {

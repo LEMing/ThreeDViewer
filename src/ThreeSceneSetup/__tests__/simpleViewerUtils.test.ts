@@ -1,17 +1,15 @@
 import * as THREE from 'three';
-import {mockRenderer} from '../__mocks__/mockRenderer';
+import {mockRenderer} from '../../__mocks__/mockRenderer';
 
-import {
-  initializeScene,
-  initializeCamera,
-  initializeRenderer,
-  addLighting,
-  addHelpers,
-  updateSize,
-  fitCameraToObject,
-  setupScene,
-  cleanupScene,
-} from '../simpleViewerUtils';
+import {addHelpers} from '../addHelpers';
+import {addLighting} from '../addLighting';
+import {cleanupScene} from '../cleanupScene';
+import {fitCameraToObject} from '../fitCameraToObject';
+import {initializeCamera} from '../initializeCamera';
+import {initializeRenderer} from '../initializeRenderer';
+import {initializeScene} from '../initializeScene';
+import {setupScene} from '../setupScene';
+import {updateSize} from '../updateSize';
 
 
 jest.mock('three', () => {
@@ -89,6 +87,20 @@ describe('Scene setup functions', () => {
     expect(camera.position.y).toBeCloseTo(5, 1);
   });
 
+  test('cleanupScene removes the renderer from the DOM and event listeners', () => {
+    const mountRef = {current: document.createElement('div')};
+    const renderer = new THREE.WebGLRenderer();
+    mountRef.current.appendChild(renderer.domElement);
+
+    const resizeHandler = jest.fn();
+    window.addEventListener('resize', resizeHandler);
+
+    cleanupScene(mountRef, renderer, resizeHandler);
+
+    expect(mountRef.current.children.length).toBe(0);
+    expect(resizeHandler).not.toBeCalled();
+  });
+
   test('setupScene sets up the scene, camera, renderer, and controls correctly', () => {
     const mountRef = {current: document.createElement('div')};
     const rendererRef = {current: null};
@@ -112,17 +124,4 @@ describe('Scene setup functions', () => {
     expect(cameraRef.current).toBe(camera);
   });
 
-  test('cleanupScene removes the renderer from the DOM and event listeners', () => {
-    const mountRef = {current: document.createElement('div')};
-    const renderer = new THREE.WebGLRenderer();
-    mountRef.current.appendChild(renderer.domElement);
-
-    const resizeHandler = jest.fn();
-    window.addEventListener('resize', resizeHandler);
-
-    cleanupScene(mountRef, renderer, resizeHandler);
-
-    expect(mountRef.current.children.length).toBe(0);
-    expect(resizeHandler).not.toBeCalled();
-  });
 });

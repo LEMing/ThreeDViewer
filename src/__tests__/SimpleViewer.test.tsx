@@ -1,8 +1,11 @@
 import {render} from '@testing-library/react';
 import * as THREE from 'three';
+import {cleanupScene} from '../ThreeSceneSetup/cleanupScene';
+import {setupScene} from '../ThreeSceneSetup/setupScene';
+import {updateSize} from '../ThreeSceneSetup/updateSize';
 
 import SimpleViewer from '../SimpleViewer';
-import {setupScene, cleanupScene, updateSize} from '../simpleViewerUtils';
+
 
 const mockCanvas = document.createElement('canvas');
 jest.mock('three', () => {
@@ -20,11 +23,9 @@ jest.mock('three', () => {
   };
 });
 
-jest.mock('../simpleViewerUtils', () => ({
-  setupScene: jest.fn(),
-  cleanupScene: jest.fn(),
-  updateSize: jest.fn(),
-}));
+jest.mock('../ThreeSceneSetup/setupScene');
+jest.mock('../ThreeSceneSetup/cleanupScene');
+jest.mock('../ThreeSceneSetup/updateSize');
 
 describe('SimpleViewer', () => {
   beforeEach(() => {
