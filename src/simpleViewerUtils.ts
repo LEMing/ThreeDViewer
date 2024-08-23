@@ -148,6 +148,11 @@ export const setupScene = (threeBase: THREEBase, object: THREE.Object3D | null) 
 
   fitCameraToObject(scene, camera);
 
+  const center = new THREE.Vector3();
+  scene.position.copy(center);
+  controls.target.copy(center);
+  controls.update();
+
   // State to track whether the scene is active
   let isSceneActive = false;
 
