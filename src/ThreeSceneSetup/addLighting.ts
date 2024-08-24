@@ -1,30 +1,46 @@
 import * as THREE from 'three';
-import {UNITS_PER_FOOT} from './constants';
+import { LightningOptions } from '../types';
 
-export const addLighting = (scene: THREE.Scene) => {
-  const ambientLight = new THREE.AmbientLight(0x404040, Math.PI);
+export const addLighting = (scene: THREE.Scene, options: LightningOptions) => {
+  // Ambient Light
+  const ambientLight = new THREE.AmbientLight(
+    options.ambientLight.color,
+    options.ambientLight.intensity
+  );
   scene.add(ambientLight);
 
-  const hemisphereLight = new THREE.HemisphereLight(0xffffbb, 0x080820, 1);
+  // Hemisphere Light
+  const hemisphereLight = new THREE.HemisphereLight(
+    options.hemisphereLight.skyColor,
+    options.hemisphereLight.groundColor,
+    options.hemisphereLight.intensity
+  );
   scene.add(hemisphereLight);
 
-  const directionalLight = new THREE.DirectionalLight(0xffffff, Math.PI);
-  directionalLight.position.set(6 * UNITS_PER_FOOT, 6 * UNITS_PER_FOOT, 6 * UNITS_PER_FOOT);
-  directionalLight.castShadow = true;
+  // Directional Light
+  const directionalLight = new THREE.DirectionalLight(
+    options.directionalLight.color,
+    options.directionalLight.intensity
+  );
+  directionalLight.position.copy(options.directionalLight.position);
 
-  directionalLight.shadow.mapSize.width = 4096;
-  directionalLight.shadow.mapSize.height = 4096;
+  // Shadow settings
+  directionalLight.castShadow = options.directionalLight.castShadow;
 
-  directionalLight.shadow.camera.near = 0.5;
-  directionalLight.shadow.camera.far = 50 * UNITS_PER_FOOT;
-  directionalLight.shadow.camera.left = -10 * UNITS_PER_FOOT;
-  directionalLight.shadow.camera.right = 10 * UNITS_PER_FOOT;
-  directionalLight.shadow.camera.top = 10 * UNITS_PER_FOOT;
-  directionalLight.shadow.camera.bottom = -10 * UNITS_PER_FOOT;
+  if (directionalLight.castShadow) {
+    directionalLight.shadow.mapSize.width = options.directionalLight.shadow.mapSize.width;
+    directionalLight.shadow.mapSize.height = options.directionalLight.shadow.mapSize.height;
 
-  directionalLight.shadow.bias = -0.001;
+    directionalLight.shadow.camera.near = options.directionalLight.shadow.camera.near;
+    directionalLight.shadow.camera.far = options.directionalLight.shadow.camera.far;
+    directionalLight.shadow.camera.left = options.directionalLight.shadow.camera.left;
+    directionalLight.shadow.camera.right = options.directionalLight.shadow.camera.right;
+    directionalLight.shadow.camera.top = options.directionalLight.shadow.camera.top;
+    directionalLight.shadow.camera.bottom = options.directionalLight.shadow.camera.bottom;
 
-  directionalLight.shadow.radius = 1;
+    directionalLight.shadow.bias = options.directionalLight.shadow.bias;
+    directionalLight.shadow.radius = options.directionalLight.shadow.radius;
+  }
 
   scene.add(directionalLight);
 };

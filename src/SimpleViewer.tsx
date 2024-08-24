@@ -1,22 +1,31 @@
-import React, {useEffect, useRef} from 'react';
-
+import React, { useEffect, useRef } from 'react';
 import * as THREE from 'three';
+import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls';
 
+import { cleanupScene } from './ThreeSceneSetup/cleanupScene';
+import { setupScene } from './ThreeSceneSetup/setupScene';
+import { updateSize } from './ThreeSceneSetup/updateSize';
+import { SimpleViewerProps, SimpleViewerOptions } from './types';
+import { throttle } from './utils';
+import defaultOptions from './defaultOptions'; // Import the default options
 
-import {cleanupScene} from './ThreeSceneSetup/cleanupScene';
-import {setupScene} from './ThreeSceneSetup/setupScene';
-import {updateSize} from './ThreeSceneSetup/updateSize';
-import {throttle} from './utils';
-
-interface SimpleViewerProps {
-  object: THREE.Object3D | null; // Pass any Three.js object
-}
-
-const SimpleViewer: React.FC<SimpleViewerProps> = ({object}) => {
+const SimpleViewer: React.FC<SimpleViewerProps> = ({ object, options = {} }) => {
   const mountRef = useRef<HTMLDivElement | null>(null);
   const rendererRef = useRef<THREE.WebGLRenderer | null>(null);
   const cameraRef = useRef<THREE.PerspectiveCamera | null>(null);
   const sceneRef = useRef<THREE.Scene | null>(null);
+  const controlsRef = useRef<OrbitControls | null>(null);
+
+  // Merge default options with provided options
+  const mergedOptions: SimpleViewerOptions = {
+    ...defaultOptions,
+    ...options,
+    camera: { ...defaultOptions.camera, ...options.camera },
+    lightning: { ...defaultOptions.lightning, ...options.lightning },
+    renderer: { ...defaultOptions.renderer, ...options.renderer },
+    controls: { ...defaultOptions.controls, ...options.controls },
+    helpers: { ...defaultOptions.helpers, ...options.helpers },
+  };
 
   useEffect(() => {
     if (!mountRef.current) return;
@@ -29,16 +38,26 @@ const SimpleViewer: React.FC<SimpleViewerProps> = ({object}) => {
     );
     const resizeHandler = throttle(resize, 50);
 
-    const { renderer } = setupScene({ mountRef, rendererRef, cameraRef, sceneRef }, object);
+    const { renderer, scene, camera, controls } = setupScene(
+      { mountRef, rendererRef, cameraRef, sceneRef },
+      object,
+      mergedOptions
+    );
+
+    // Store references
+    rendererRef.current = renderer;
+    sceneRef.current = scene;
+    cameraRef.current = camera;
+    controlsRef.current = controls;
 
     resize(); // Initial size update
 
     window.addEventListener('resize', resizeHandler);
 
     return () => cleanupScene(mountRef, renderer, resizeHandler);
-  }, [object]);
+  }, [object, mergedOptions]);
 
-  return <div style={{ width: '100%', height: '100%'}} ref={mountRef} />;
+  return <div style={{ width: '100%', height: '100%' }} ref={mountRef} />;
 };
 
 export default SimpleViewer;

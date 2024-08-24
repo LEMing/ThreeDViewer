@@ -1,8 +1,12 @@
 import * as THREE from 'three';
-import {BACKGROUND_COLOR} from './constants';
+import { SimpleViewerOptions } from '../types'; // Make sure to import the types
 
-export const initializeScene = () => {
+export const initializeScene = (options: SimpleViewerOptions) => {
   const scene = new THREE.Scene();
-  scene.background = new THREE.Color(BACKGROUND_COLOR);
+
+  // Use the backgroundColor from options, or fall back to a default if not provided
+  const backgroundColor = options.backgroundColor
+  scene.background = new THREE.Color(backgroundColor);
+
   return scene;
 };

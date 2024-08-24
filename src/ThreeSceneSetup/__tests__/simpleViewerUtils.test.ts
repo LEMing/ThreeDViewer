@@ -1,5 +1,6 @@
 import * as THREE from 'three';
 import {mockRenderer} from '../../__mocks__/mockRenderer';
+import defaultOptions from '../../defaultOptions';
 
 import {addHelpers} from '../addHelpers';
 import {addLighting} from '../addLighting';
@@ -22,28 +23,28 @@ jest.mock('three', () => {
 
 describe('Scene setup functions', () => {
   test('initializeScene creates a scene with the correct background color', () => {
-    const scene = initializeScene();
+    const scene = initializeScene(defaultOptions);
     expect(scene).toBeInstanceOf(THREE.Scene);
     expect(scene.background).toEqual(new THREE.Color(0xf0f0f7));
   });
 
   test('initializeCamera creates a camera with the correct aspect ratio and properties', () => {
     const aspectRatio = 16 / 9;
-    const camera = initializeCamera(aspectRatio);
+    const camera = initializeCamera(aspectRatio, defaultOptions.camera);
     expect(camera).toBeInstanceOf(THREE.PerspectiveCamera);
     expect(camera.aspect).toBe(aspectRatio);
     expect(camera.fov).toBe(75);
   });
 
   test('initializeRenderer creates a renderer with the correct properties', () => {
-    const renderer = initializeRenderer();
+    const renderer = initializeRenderer(defaultOptions.renderer);
     expect(renderer.shadowMap.enabled).toBe(true);
     expect(renderer.getPixelRatio()).toBe(window.devicePixelRatio);
   });
 
   test('addLighting adds ambient and directional lights to the scene', () => {
     const scene = new THREE.Scene();
-    addLighting(scene);
+    addLighting(scene, defaultOptions.lightning);
     expect(scene.children.some((obj) => obj instanceof THREE.AmbientLight)).toBe(true);
     expect(scene.children.some((obj) => obj instanceof THREE.DirectionalLight)).toBe(true);
   });
@@ -104,7 +105,7 @@ describe('Scene setup functions', () => {
       camera,
       renderer,
       controls
-    } = setupScene({mountRef, rendererRef, cameraRef, sceneRef}, object);
+    } = setupScene({mountRef, rendererRef, cameraRef, sceneRef}, object, defaultOptions);
 
     expect(scene).toBeInstanceOf(THREE.Scene);
     expect(camera).toBeInstanceOf(THREE.PerspectiveCamera);
