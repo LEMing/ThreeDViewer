@@ -65,6 +65,7 @@ SimpleViewer accepts an `options` prop for customization. Here's an overview of 
 
 ```javascript
 const defaultOptions = {
+  staticScene: true, // This param will stop rendering if there is no activity
   backgroundColor: '#f0f0f7',
   camera: {
     position: [6, 2, 1.2],
@@ -98,7 +99,8 @@ const defaultOptions = {
     grid: true,
     axes: false,
     boundingBox: true
-  }
+  },
+  animationLoop: null // External animation function
 }
 ```
 

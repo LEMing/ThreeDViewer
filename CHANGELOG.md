@@ -1,6 +1,10 @@
 Changelog
 =========
 
+0.3.0
+---
+* Added ability to pass external animation func
+
 0.2.0
 ---
 * Added ability to set custom options for the viewer

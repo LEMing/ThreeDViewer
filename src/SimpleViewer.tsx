@@ -57,7 +57,6 @@ const SimpleViewer: React.FC<SimpleViewerProps> = ({ object, options = defaultOp
     resize(); // Initial size update
 
     window.addEventListener('resize', resizeHandler);
-    console.log('main useEffect')
     return () => cleanupScene(mountRef, renderer, resizeHandler);
   }, [object, mergedOptions]);
 
