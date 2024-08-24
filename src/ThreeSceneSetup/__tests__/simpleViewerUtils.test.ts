@@ -98,6 +98,7 @@ describe('Scene setup functions', () => {
     const rendererRef = {current: null};
     const cameraRef = {current: null};
     const sceneRef = {current: null};
+    const animationLoopRef = {current: null};
     const object = new THREE.Object3D();
 
     const {

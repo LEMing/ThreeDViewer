@@ -2,6 +2,7 @@ import * as THREE from 'three';
 import { SimpleViewerOptions } from './types'; // Assuming you have a types file
 
 const defaultOptions: SimpleViewerOptions = {
+  staticScene: true, // It stops animation loop if there is no interactions
   backgroundColor: '#f0f0f7', // From BACKGROUND_COLOR constant
   camera: {
     cameraPosition: [6, 2, 1.2],
@@ -67,11 +68,13 @@ const defaultOptions: SimpleViewerOptions = {
     object3DHelper: false,
   },
   threeBaseRefs: {
+    mountPoint: {current: null},
     scene: { current: null },
     camera: { current: null },
     renderer: { current: null },
     controls: { current: null },
   },
+  animationLoop: null,
 };
 
 export default defaultOptions;

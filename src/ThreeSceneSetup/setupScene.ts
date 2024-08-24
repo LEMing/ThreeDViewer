@@ -1,6 +1,7 @@
 import * as THREE from 'three';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls';
 import FloorAligner from '../FloorAligner';
+import {throttle} from '../utils';
 import { addHelpers } from './addHelpers';
 import { addLighting } from './addLighting';
 import { fitCameraToObject } from './fitCameraToObject';
@@ -64,7 +65,7 @@ export const setupScene = (
   const startRendering = () => {
     if (!isSceneActive) {
       isSceneActive = true;
-      animate();
+      animate(performance.now());
     }
   };
 
@@ -75,19 +76,28 @@ export const setupScene = (
   controls.addEventListener('start', startRendering);
   controls.addEventListener('end', stopRendering);
 
-  const animate = () => {
-    if (!isSceneActive) return;
+  const throttledRender = throttle(() => {
+    if (isSceneActive || !options.staticScene) {
+      renderer.render(scene, camera);
+    }
+  }, 1000 / 30);
+
+  const animate = (time: number) => {
+    if (!isSceneActive && options.staticScene) return;
     requestAnimationFrame(animate);
+    if (options.animationLoop) {
+      options.animationLoop(time);
+    }
     controls.update();
 
     if (object) {
       renderer.shadowMap.needsUpdate = true;
     }
 
-    renderer.render(scene, camera);
+    throttledRender();
   };
 
-  animate();
+  animate(performance.now());
 
   return { scene, camera, renderer, controls };
 };

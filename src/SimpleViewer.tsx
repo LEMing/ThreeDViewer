@@ -9,7 +9,7 @@ import { SimpleViewerProps, SimpleViewerOptions } from './types';
 import { throttle } from './utils';
 import defaultOptions from './defaultOptions'; // Import the default options
 
-const SimpleViewer: React.FC<SimpleViewerProps> = ({ object, options = {} }) => {
+const SimpleViewer: React.FC<SimpleViewerProps> = ({ object, options = defaultOptions }) => {
   const mountRef = useRef<HTMLDivElement | null>(null);
   const rendererRef = useRef<THREE.WebGLRenderer | null>(null);
   const cameraRef = useRef<THREE.PerspectiveCamera | null>(null);
@@ -37,7 +37,12 @@ const SimpleViewer: React.FC<SimpleViewerProps> = ({ object, options = {} }) => 
     );
     const resizeHandler = throttle(resize, 50);
 
-    const { renderer, scene, camera, controls } = setupScene(
+    const {
+      renderer,
+      scene,
+      camera,
+      controls
+    } = setupScene(
       { mountRef, rendererRef, cameraRef, sceneRef },
       object,
       mergedOptions
@@ -52,7 +57,7 @@ const SimpleViewer: React.FC<SimpleViewerProps> = ({ object, options = {} }) => 
     resize(); // Initial size update
 
     window.addEventListener('resize', resizeHandler);
-
+    console.log('main useEffect')
     return () => cleanupScene(mountRef, renderer, resizeHandler);
   }, [object, mergedOptions]);
 

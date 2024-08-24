@@ -74,6 +74,7 @@ export interface HelperOptions {
 }
 
 export interface SimpleViewerOptions {
+  staticScene: boolean;
   backgroundColor: string;
   camera: CameraOptions
   lightning: LightningOptions,
@@ -92,5 +93,7 @@ export interface SimpleViewerOptions {
     camera: {current: THREE.PerspectiveCamera | null};
     renderer: {current: THREE.WebGLRenderer | null};
     controls: {current: OrbitControls | null};
-  }
+    mountPoint: {current: HTMLDivElement | null}
+  },
+  animationLoop: ((time: number) => void) | null;
 }
