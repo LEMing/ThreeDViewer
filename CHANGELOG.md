@@ -1,6 +1,10 @@
 Changelog
 =========
 
+0.2.0
+---
+* Added ability to set custom options for the viewer
+
 0.1.0
 ---
 * Added auto aligner and resizer

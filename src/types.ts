@@ -15,11 +15,12 @@ export interface SimpleViewerProps {
 }
 
 export interface CameraOptions {
-  cameraPosition: THREE.Vector3;
-  cameraTarget: THREE.Vector3;
+  cameraPosition: [number, number, number];
+  cameraTarget: [number, number, number];
   cameraFov: number;
   cameraNear: number;
   cameraFar: number;
+  autoFitToObject: boolean;
 }
 
 export interface RendererOptions {

@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from 'react';
+import React, {useEffect, useMemo, useRef} from 'react';
 import * as THREE from 'three';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls';
 
@@ -16,8 +16,7 @@ const SimpleViewer: React.FC<SimpleViewerProps> = ({ object, options = {} }) => 
   const sceneRef = useRef<THREE.Scene | null>(null);
   const controlsRef = useRef<OrbitControls | null>(null);
 
-  // Merge default options with provided options
-  const mergedOptions: SimpleViewerOptions = {
+  const mergedOptions = useMemo<SimpleViewerOptions>(() => ({
     ...defaultOptions,
     ...options,
     camera: { ...defaultOptions.camera, ...options.camera },
@@ -25,7 +24,7 @@ const SimpleViewer: React.FC<SimpleViewerProps> = ({ object, options = {} }) => 
     renderer: { ...defaultOptions.renderer, ...options.renderer },
     controls: { ...defaultOptions.controls, ...options.controls },
     helpers: { ...defaultOptions.helpers, ...options.helpers },
-  };
+  }), [options]);
 
   useEffect(() => {
     if (!mountRef.current) return;

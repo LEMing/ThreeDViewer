@@ -50,7 +50,9 @@ export const setupScene = (
   Object.assign(controls, options.controls);
   controls.update();
 
-  fitCameraToObject(scene, camera);
+  if (options.camera.autoFitToObject) {
+    fitCameraToObject(scene, camera);
+  }
 
   const center = new THREE.Vector3();
   scene.position.copy(center);

@@ -57,6 +57,92 @@ The main component for displaying 3D objects.
 
 Props:
 - `object` (required): A Three.js Object3D to be displayed in the viewer.
+- `options` (optional): An object containing viewer options (see below).
+
+## Configuration Options
+
+SimpleViewer accepts an `options` prop for customization. Here's an overview of available options:
+
+```javascript
+const defaultOptions = {
+  backgroundColor: '#f0f0f7',
+  camera: {
+    position: [6, 2, 1.2],
+    target: [0, 0, 0],
+    fov: 75,
+    near: 0.1,
+    far: 100000
+  },
+  lights: {
+    ambient: { color: '#404040', intensity: 1 },
+    hemisphere: { 
+      skyColor: '#ffffbb', 
+      groundColor: '#080820', 
+      intensity: 1 
+    },
+    directional: {
+      color: '#ffffff',
+      intensity: 1,
+      position: [6, 6, 6],
+      castShadow: true
+    }
+  },
+  controls: {
+    enableDamping: true,
+    dampingFactor: 0.25,
+    enableZoom: true,
+    enableRotate: true,
+    enablePan: true
+  },
+  helpers: {
+    grid: true,
+    axes: false,
+    boundingBox: true
+  }
+}
+```
+
+To use custom options:
+
+```jsx
+import React from 'react';
+import { SimpleViewer, defaultOptions } from 'threedviewer';
+import * as THREE from 'three';
+
+function App() {
+  const geometry = new THREE.BoxGeometry(1, 1, 1);
+  const material = new THREE.MeshStandardMaterial({ color: 0x00ff00 });
+  const cube = new THREE.Mesh(geometry, material);
+
+  const customOptions = {
+      ...defaultOptions,
+      backgroundColor: '#000000',
+      camera: {
+        ...defaultOptions.camera,
+        cameraPosition: [12 * 6, 12 * 6, 12 * 6],
+        cameraTarget: [0, 0, 0],
+        fov: 60,
+        autoFitToObject: false,
+      },
+      lights: {
+        ambient: { intensity: 0.5 },
+        directional: { position: [10, 10, 5] }
+      },
+  };
+
+  return (
+    <div style={{ width: '100%', height: '400px' }}>
+      <SimpleViewer object={cube} options={customOptions} />
+    </div>
+  );
+}
+
+export default App;
+```
+
+This example demonstrates how to override specific options while leaving others at their default values. You only need to specify the options you want to change.
+
+For detailed explanations of each option, please refer to our [API documentation](link-to-api-docs).
 
 ## Development
 

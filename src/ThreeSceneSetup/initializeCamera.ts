@@ -12,12 +12,12 @@ export const initializeCamera = (aspectRatio: number, cameraOptions: CameraOptio
 
   // Set camera position
   if (cameraOptions.cameraPosition) {
-    camera.position.copy(cameraOptions.cameraPosition);
+    camera.position.copy(new THREE.Vector3().fromArray(cameraOptions.cameraPosition));
   }
 
   // Set camera target (look at point)
   if (cameraOptions.cameraTarget) {
-    camera.lookAt(cameraOptions.cameraTarget);
+    camera.lookAt(new THREE.Vector3().fromArray(cameraOptions.cameraTarget));
   }
 
   return camera;
