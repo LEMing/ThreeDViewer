@@ -1,6 +1,10 @@
 Changelog
 =========
 
+0.3.1
+---
+* Added a minor fix for number of frames per second
+
 0.3.0
 ---
 * Added ability to pass external animation func

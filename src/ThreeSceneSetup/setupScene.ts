@@ -4,6 +4,7 @@ import FloorAligner from '../FloorAligner';
 import {throttle} from '../utils';
 import { addHelpers } from './addHelpers';
 import { addLighting } from './addLighting';
+import {TIME_PER_FRAME} from './constants';
 import { fitCameraToObject } from './fitCameraToObject';
 import { initializeCamera } from './initializeCamera';
 import { initializeRenderer } from './initializeRenderer';
@@ -80,7 +81,7 @@ export const setupScene = (
     if (isSceneActive || !options.staticScene) {
       renderer.render(scene, camera);
     }
-  }, 1000 / 30);
+  }, TIME_PER_FRAME);
 
   const animate = (time: number) => {
     if (!isSceneActive && options.staticScene) return;

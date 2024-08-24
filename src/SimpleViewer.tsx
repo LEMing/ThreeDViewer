@@ -3,6 +3,7 @@ import * as THREE from 'three';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls';
 
 import { cleanupScene } from './ThreeSceneSetup/cleanupScene';
+import {TIME_PER_FRAME} from './ThreeSceneSetup/constants';
 import { setupScene } from './ThreeSceneSetup/setupScene';
 import { updateSize } from './ThreeSceneSetup/updateSize';
 import { SimpleViewerProps, SimpleViewerOptions } from './types';
@@ -35,7 +36,7 @@ const SimpleViewer: React.FC<SimpleViewerProps> = ({ object, options = defaultOp
       mountRef,
       sceneRef.current as THREE.Scene
     );
-    const resizeHandler = throttle(resize, 50);
+    const resizeHandler = throttle(resize, TIME_PER_FRAME);
 
     const {
       renderer,
