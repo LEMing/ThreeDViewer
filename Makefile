@@ -1,5 +1,3 @@
-# Makefile
-
 # Variables
 SHELL := /bin/bash
 PACKAGE_MANAGER := npm
@@ -7,7 +5,7 @@ NODE_MODULES := node_modules
 DIST := dist
 
 # Targets
-.PHONY: all install clean build test dev preview help
+.PHONY: all install clean build test dev preview publish help
 
 all: install build test
 
@@ -29,7 +27,10 @@ test: install
 dev: install
 	$(PACKAGE_MANAGER) run dev
 
-publish: build test
+preview: install
+	$(PACKAGE_MANAGER) run preview
+
+publish: install build test
 	$(PACKAGE_MANAGER) publish
 
 help:
@@ -39,5 +40,6 @@ help:
 	@echo "  make build    - Build the project"
 	@echo "  make test     - Run tests"
 	@echo "  make dev      - Start development server"
+	@echo "  make preview  - Preview the production build"
 	@echo "  make publish  - Build, test, and publish to npm"
 	@echo "  make help     - Show this help message"

@@ -3,11 +3,28 @@
   "private": false,
   "version": "0.4.0",
   "type": "module",
+  "description": "A 3D viewer based on React and Three.js",
+  "keywords": [
+    "3d",
+    "three.js",
+    "react",
+    "viewer"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/LEMing/threedviewer.git"
+  },
+  "license": "MIT",
+  "engines": {
+    "node": ">=16"
+  },
   "scripts": {
     "dev": "vite",
     "build": "tsc && vite build",
     "preview": "vite preview",
-    "test": "jest"
+    "test": "jest",
+    "prepublishOnly": "npm run build && npm run test",
+    "postpublish": "echo 'Published successfully!'"
   },
   "files": [
     "dist",
@@ -22,6 +39,9 @@
       "import": "./dist/simple-viewer.es.js",
       "require": "./dist/simple-viewer.umd.js"
     }
+  },
+  "publishConfig": {
+    "access": "public"
   },
   "devDependencies": {
     "@testing-library/jest-dom": "^6.4.8",
