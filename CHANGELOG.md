@@ -1,6 +1,10 @@
 Changelog
 =========
 
+0.4.1
+---
+* Update Readme
+
 0.4.0
 ---
 * Add a fix for options drilling
