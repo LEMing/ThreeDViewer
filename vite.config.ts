@@ -18,9 +18,6 @@ export default defineConfig({
     },
   },
   build: {
-    watch: {
-      include: ['src/**/*.ts', 'src/**/*.tsx'],
-    },
     lib: {
       entry: resolve(__dirname, 'src/index.ts'),
       name: 'SimpleViewer',
