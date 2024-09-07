@@ -1,6 +1,12 @@
 Changelog
 =========
 
+0.4.0
+---
+* Add a fix for options drilling
+* Add ability to set external scene, renderer, contols, etc.
+* Add support for helpers color options
+
 0.3.1
 ---
 * Added a minor fix for number of frames per second

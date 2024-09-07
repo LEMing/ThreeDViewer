@@ -11,20 +11,16 @@ import { throttle } from './utils';
 import defaultOptions from './defaultOptions'; // Import the default options
 
 const SimpleViewer: React.FC<SimpleViewerProps> = ({ object, options = defaultOptions }) => {
-  const mountRef = useRef<HTMLDivElement | null>(null);
-  const rendererRef = useRef<THREE.WebGLRenderer | null>(null);
-  const cameraRef = useRef<THREE.PerspectiveCamera | null>(null);
-  const sceneRef = useRef<THREE.Scene | null>(null);
-  const controlsRef = useRef<OrbitControls | null>(null);
+
+  const mountRef = options.threeBaseRefs.mountPoint || useRef<HTMLDivElement | null>(null);
+  const rendererRef = options.threeBaseRefs.renderer || useRef<THREE.WebGLRenderer | null>(null);
+  const cameraRef = options.threeBaseRefs.camera || useRef<THREE.PerspectiveCamera | null>(null);
+  const sceneRef = options.threeBaseRefs.scene || useRef<THREE.Scene | null>(null);
+  const controlsRef = options.threeBaseRefs.controls || useRef<OrbitControls | null>(null);
 
   const mergedOptions = useMemo<SimpleViewerOptions>(() => ({
     ...defaultOptions,
     ...options,
-    camera: { ...defaultOptions.camera, ...options.camera },
-    lightning: { ...defaultOptions.lightning, ...options.lightning },
-    renderer: { ...defaultOptions.renderer, ...options.renderer },
-    controls: { ...defaultOptions.controls, ...options.controls },
-    helpers: { ...defaultOptions.helpers, ...options.helpers },
   }), [options]);
 
   useEffect(() => {

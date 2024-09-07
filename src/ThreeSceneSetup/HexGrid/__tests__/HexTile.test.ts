@@ -24,7 +24,7 @@ describe('HexTile', () => {
   test('constructor should set position and size', () => {
     const position = new THREE.Vector3(1, 2, 3);
     const size = 5;
-    const hexTile = new HexTile(position, size);
+    const hexTile = new HexTile(position, size, '0xFFFFFF');
 
     expect(hexTile.position).toBe(position);
     expect(hexTile.size).toBe(size);
@@ -33,7 +33,7 @@ describe('HexTile', () => {
   test('createMesh should create and return a LineSegments object', () => {
     const position = new THREE.Vector3(1, 2, 3);
     const size = 5;
-    const hexTile = new HexTile(position, size);
+    const hexTile = new HexTile(position, size, '0xFFFFFF');
 
     const mockMesh = {
       position: {
@@ -50,7 +50,7 @@ describe('HexTile', () => {
 
     expect(mockCircleGeometry).toHaveBeenCalledWith(size, 6);
     expect(mockEdgesGeometry).toHaveBeenCalled();
-    expect(mockLineBasicMaterial).toHaveBeenCalledWith({ color: 0x333333 });
+    expect(mockLineBasicMaterial).toHaveBeenCalledWith({ color: '0xFFFFFF' });
     expect(mockLineSegments).toHaveBeenCalled();
 
     expect(mockMesh.rotation.x).toBeCloseTo(Math.PI / 2);

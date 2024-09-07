@@ -18,28 +18,28 @@ describe('HexGrid', () => {
   });
 
   test('constructor should set radius and tileSize', () => {
-    const grid = new HexGrid(3, 1);
+    const grid = new HexGrid(3, 1, '0xFFFFFF');
     expect(grid.radius).toBe(3);
     expect(grid.tileSize).toBe(1);
   });
 
   test('generateGrid should create correct number of tiles', () => {
-    const grid = new HexGrid(1, 1);
+    const grid = new HexGrid(1, 1, '0xFFFFFF');
     const tiles = grid.generateGrid();
     expect(tiles.length).toBe(7); // For radius 1, we expect 7 tiles
   });
 
   test('generateGrid should create HexTile instances with correct positions', () => {
-    const grid = new HexGrid(1, 1);
+    const grid = new HexGrid(1, 1, '0xFFFFFF');
     grid.generateGrid();
 
     // Check if HexTile was called with correct positions
     expect(HexTile).toHaveBeenCalledTimes(7);
-    expect(HexTile).toHaveBeenCalledWith(expect.any(THREE.Vector3), 1);
+    expect(HexTile).toHaveBeenCalledWith(expect.any(THREE.Vector3), 1, '0xFFFFFF');
   });
 
   test('addToScene should add tiles to the scene', () => {
-    const grid = new HexGrid(1, 1);
+    const grid = new HexGrid(1, 1, '0xFFFFFF');
     const mockSceneInstance = {
       add: jest.fn()
     };

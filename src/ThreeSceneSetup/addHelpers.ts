@@ -7,7 +7,7 @@ export const addHelpers = (scene: THREE.Scene, object: THREE.Object3D | null, op
   scene.children = scene.children.filter(child => !(child instanceof THREE.GridHelper || child instanceof THREE.AxesHelper || child instanceof THREE.BoxHelper));
 
   if (options.gridHelper) {
-    const grid = new HexGrid(3, 12);
+    const grid = new HexGrid(3, 12, options.color);
     grid.addToScene(scene);
 
     const planeGeometry = new THREE.PlaneGeometry(6 * UNITS_PER_FOOT, 6 * UNITS_PER_FOOT);
@@ -27,7 +27,7 @@ export const addHelpers = (scene: THREE.Scene, object: THREE.Object3D | null, op
   }
 
   if (options.object3DHelper && object) {
-    const boxHelper = new THREE.BoxHelper(object, 0xff0000);
+    const boxHelper = new THREE.BoxHelper(object, new THREE.Color(options.color));
     scene.add(boxHelper);
   }
 };

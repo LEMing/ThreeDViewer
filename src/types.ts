@@ -69,6 +69,7 @@ export interface LightningOptions {
 
 export interface HelperOptions {
   gridHelper: boolean;
+  color: string;
   axesHelper: boolean;
   object3DHelper: boolean;
 }
