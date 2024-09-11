@@ -64,7 +64,7 @@ const defaultOptions: SimpleViewerOptions = {
   },
   helpers: {
     gridHelper: true,
-    color: '#ffffff',
+    color: '#333333',
     axesHelper: false,
     object3DHelper: false,
   },
