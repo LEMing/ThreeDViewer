@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from 'react';
+import React, {useCallback, useEffect, useRef} from 'react';
 import * as THREE from 'three';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls';
 import {defaultOptions} from '../index';
@@ -16,24 +16,44 @@ interface GizmoProps {
 
 const Gizmo: React.FC<GizmoProps> = ({ camera, controls, render }) => {
   const gizmoRef = useRef<HTMLDivElement | null>(null);
-  const scene = useRef(new THREE.Scene()).current;
-  const renderer = useRef(new THREE.WebGLRenderer({ alpha: true, antialias: true })).current;
+  const gizmoScene = useRef(new THREE.Scene()).current;
+  const gizmoRenderer = useRef(new THREE.WebGLRenderer({ alpha: true, antialias: true })).current;
   const gizmoCamera = useRef(new THREE.PerspectiveCamera(50, 1, 0.1, 100)).current;
   const cubeRef = useRef<THREE.Group | null>(null);
+
+
+  const renderGizmo = useCallback(() => {
+    console.log('renderGizmo')
+    gizmoRenderer.render(gizmoScene, gizmoCamera);
+  }, []);
+
+  useEffect(() => {
+    const cube = cubeRef.current;
+    if (!gizmoRef.current || !cube || !camera ) return;
+    const syncCube = async() => {
+      console.log('initial sync');
+      await syncCubeWithCamera(cube, camera, renderGizmo);
+      console.log('synced');
+    }
+    syncCube().then(() => {
+      console.log('Promise resolved');
+    });
+  }, [camera, renderGizmo]);
 
   useEffect(() => {
     if (!gizmoRef.current || !camera || !controls) return;
 
     // Настраиваем рендерер и камеру гизмо
-    setupRenderer(renderer, gizmoRef.current, gizmoCamera);
+    setupRenderer(gizmoRenderer, gizmoRef.current, gizmoCamera);
 
     // Создаем и добавляем куб на сцену
-    cubeRef.current = GizmoCube(scene);
+    const cube = GizmoCube(gizmoScene);
+    cubeRef.current = cube;
 
     // Добавляем освещение
-    addLighting(scene, defaultOptions.lightning);
+    addLighting(gizmoScene, defaultOptions.lightning);
 
-    const onChangeListener = () => syncCubeWithCamera(cubeRef.current, camera, render);
+    const onChangeListener = () => syncCubeWithCamera(cube, camera, () => gizmoRenderer.render(gizmoScene, gizmoCamera));
 
     // Синхронизация куба с внешней камерой
     controls.addEventListener('change', onChangeListener);
@@ -44,15 +64,15 @@ const Gizmo: React.FC<GizmoProps> = ({ camera, controls, render }) => {
     // Анимация рендеринга гизмо
     const animate = () => {
       requestAnimationFrame(animate);
-      renderer.render(scene, gizmoCamera);
+      gizmoRenderer.render(gizmoScene, gizmoCamera);
     };
     animate();
 
     return () => {
       controls.removeEventListener('change', onChangeListener);
-      scene.clear(); // Очищаем сцену при размонтировании
+      gizmoScene.clear(); // Очищаем сцену при размонтировании
     };
-  }, [camera, controls, renderer, scene, gizmoCamera]);
+  }, [camera, controls, gizmoRenderer, gizmoScene, gizmoCamera]);
 
   return (
     <div
