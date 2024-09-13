@@ -2,7 +2,7 @@ import React, {useCallback, useEffect, useRef, useState} from 'react';
 import * as THREE from 'three';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls';
 
-import { syncCubeWithCamera } from './CameraController';
+import {syncGizmoCameraWithMain} from './CameraController';
 import setupGizmo from './setupGizmo';
 
 interface GizmoProps {
@@ -20,17 +20,17 @@ const Gizmo: React.FC<GizmoProps> = ({ camera, controls, render }) => {
 
   // Принудительный рендеринг гизмо после каждой синхронизации
   const renderGizmo = useCallback(() => {
-    if (!cubeRef.current) return;
     render();
     gizmoRenderer.render(gizmoScene, gizmoCamera);
   }, [render]);
 
   // Настройка сцены и рендерера
   useEffect(() => {
-    if (!gizmoRef.current || !camera || !controls) return;
+    const gizmoDiv = gizmoRef.current;
+    if (!gizmoDiv || !camera || !controls) return;
 
     const cleanup = setupGizmo(
-      gizmoRef,
+      gizmoDiv,
       gizmoScene,
       gizmoRenderer,
       gizmoCamera,
@@ -38,7 +38,6 @@ const Gizmo: React.FC<GizmoProps> = ({ camera, controls, render }) => {
       camera,
       controls,
       renderGizmo,
-      render
     );
 
     return cleanup;
@@ -49,17 +48,14 @@ const Gizmo: React.FC<GizmoProps> = ({ camera, controls, render }) => {
     const cube = cubeRef.current;
     if (!cube || !camera) return;
 
-    const syncCube = async () => {
+    const sync = () => {
       console.log('--initial sync');
-      await syncCubeWithCamera(cube, camera, renderGizmo);
+      syncGizmoCameraWithMain(gizmoCamera, camera);
       console.log('--synced');
       renderGizmo(); // Принудительный вызов рендеринга после синхронизации
     };
 
-    syncCube().then(() => {
-      console.log('Promise resolved');
-      cube.updateMatrixWorld(true);
-    });
+    sync();
   }, [camera, renderGizmo]);
 
   return (

@@ -5,12 +5,12 @@ const defaultOptions: SimpleViewerOptions = {
   staticScene: true, // It stops animation loop if there is no interactions
   backgroundColor: '#f0f0f7', // From BACKGROUND_COLOR constant
   camera: {
-    cameraPosition: [6, 2, 1.2],
+    cameraPosition: [0, 100, 0],
     cameraTarget: [0, 0, 0], // Center of the scene
     cameraFov: 75, // From initializeCamera
     cameraNear: 0.1, // From initializeCamera
     cameraFar: 100000, // From initializeCamera
-    autoFitToObject: true,
+    autoFitToObject: false,
   },
   lightning: {
     ambientLight: {

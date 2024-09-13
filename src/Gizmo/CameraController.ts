@@ -1,59 +1,38 @@
 
 import * as THREE from 'three';
-let isSyncing = false;
 
-export const syncCubeWithCamera = async (
-  cube: THREE.Group,
-  camera: THREE.PerspectiveCamera,
-  gizmoRender: () => void
-) => {
-  if (isSyncing) return;
+export const syncGizmoCameraWithMain = (gizmoCamera: THREE.PerspectiveCamera, camera: THREE.PerspectiveCamera) => {
+  // Копируем ориентацию основной камеры в гизмо-камеру
+  gizmoCamera.quaternion.copy(camera.quaternion);
 
-  isSyncing = true;
-  return new Promise((resolve) => {
-    setTimeout(() => {
-      // Копируем кватернион камеры в куб
+  // Определяем направление, в котором смотрит гизмо-камера
+  const direction = new THREE.Vector3(0, 0, -1).applyQuaternion(gizmoCamera.quaternion).normalize();
 
-      cube.quaternion.copy(camera.quaternion);
+  // Устанавливаем позицию гизмо-камеры на фиксированное расстояние от центра
+  gizmoCamera.position.copy(direction.multiplyScalar(5).negate()); // Смещаем по направлению взгляда
 
-      // Обновляем сцену
-      cube.updateMatrixWorld(true);
-
-      gizmoRender();
-      isSyncing = false;
-      resolve(true);
-    },1);
-  });
+  gizmoCamera.lookAt(0, 0, 0); // Гизмо-камера всегда смотрит на центр сцены
+  gizmoCamera.updateProjectionMatrix(); // Обновляем матрицу проекции
 };
 
-export const syncCameraWithCube = (
-  cube: THREE.Group | null,
+export const syncMainCameraWithGizmo = (
   camera: THREE.PerspectiveCamera,
-  render: () => void
+  gizmoCamera: THREE.PerspectiveCamera
 ) => {
-  if (!cube || !camera || isSyncing) return;
+  // Вычисляем расстояние от камеры до центра сцены
+  const originalDistance = camera.position.length(); // Расстояние до (0, 0, 0)
 
-  isSyncing = true;
+  // Копируем ориентацию гизмо-камеры в основную камеру
+  camera.quaternion.copy(gizmoCamera.quaternion);
 
-  return new Promise((resolve) => {
-    setTimeout(() => {
-      // Копируем кватернион куба в камеру
-      camera.quaternion.copy(cube.quaternion);
+  // Определяем направление, в котором смотрит основная камера
+  const direction = new THREE.Vector3(0, 0, -1)
+  .applyQuaternion(camera.quaternion)
+  .normalize();
 
-      const distanceFromCenter = camera.position.length();
-      // Устанавливаем позицию камеры относительно вращения
-      const direction = new THREE.Vector3(0, 0, -1).applyQuaternion(camera.quaternion).normalize();
-      camera.position.copy(direction.multiplyScalar(distanceFromCenter));
+  // Устанавливаем позицию основной камеры на исходное расстояние от центра сцены
+  camera.position.copy(direction.multiplyScalar(-originalDistance)); // Смещаем по направлению взгляда
 
-      // Камера всегда должна смотреть на центр сцены
-      camera.lookAt(new THREE.Vector3(0, 0, 0));
-      console.log('syncCameraWithCube');
-
-      // Обновляем сцену
-      render();
-      isSyncing = false;
-      resolve(true);
-    },1);
-  });
-
+  camera.lookAt(0, 0, 0); // Основная камера всегда смотрит на центр сцены
+  camera.updateProjectionMatrix(); // Обновляем матрицу проекции
 };
