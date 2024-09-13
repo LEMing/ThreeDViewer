@@ -1,5 +1,6 @@
 import * as THREE from 'three';
 import {OrbitControls} from 'three/examples/jsm/controls/OrbitControls';
+import {b} from 'vite/dist/node/types.d-aGj9QkWt';
 
 export type LoaderGLB = {
   load: (
@@ -72,6 +73,7 @@ export interface HelperOptions {
   color: string;
   axesHelper: boolean;
   object3DHelper: boolean;
+  addGizmo: boolean;
 }
 
 export interface SimpleViewerOptions {

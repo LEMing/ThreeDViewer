@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import ReactDOM from 'react-dom/client';
 import {GLTFLoader} from 'three/examples/jsm/loaders/GLTFLoader';
+import defaultOptions from './defaultOptions';
 import {loadModel} from './loadModel';
 import SimpleViewer from './SimpleViewer';
 import * as THREE from 'three';
@@ -19,7 +20,15 @@ const App = () => {
 
   return (
     <div style={{ width: '100vw', height: '100vh', margin: 0, padding: 0 }}>
-      {object && <SimpleViewer object={object} />}
+      {object && <SimpleViewer object={object} options={
+        {
+          ...defaultOptions,
+          helpers: {
+            ...defaultOptions.helpers,
+            addGizmo: true
+          }
+        }
+      }/>}
     </div>
   );
 };

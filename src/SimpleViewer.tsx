@@ -70,8 +70,7 @@ const SimpleViewer: React.FC<SimpleViewerProps> = ({ object, options = defaultOp
 
   return (
     <>
-      {/* Gizmo рендерится только после инициализации камеры и контролов */}
-      {isInitialized && (
+      {(
         <Gizmo camera={cameraRef.current} controls={controlsRef.current} render={render} />
       )}
     <div style={{ width: '100%', height: '100%' }} ref={mountRef}/>

@@ -67,6 +67,7 @@ const defaultOptions: SimpleViewerOptions = {
     color: '#333333',
     axesHelper: false,
     object3DHelper: false,
+    addGizmo: false,
   },
   threeBaseRefs: {
     mountPoint: {current: null},

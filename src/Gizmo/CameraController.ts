@@ -13,16 +13,8 @@ export const syncCubeWithCamera = async (
   return new Promise((resolve) => {
     setTimeout(() => {
       // Копируем кватернион камеры в куб
-      console.log(cube.quaternion.toArray());
-      console.log(cube.scale.toArray());
 
       cube.quaternion.copy(camera.quaternion);
-      cube.scale.setScalar(2);
-
-      console.log('AAAAAAAAAAAAAAAAAA');
-
-      console.log(cube.quaternion.toArray());
-      console.log(cube.scale.toArray());
 
       // Обновляем сцену
       cube.updateMatrixWorld(true);
