@@ -1,8 +1,8 @@
 import * as THREE from 'three';
 
 interface CameraSyncParams {
-  sourceCamera: THREE.PerspectiveCamera;
-  targetCamera: THREE.PerspectiveCamera;
+  sourceCamera: THREE.Camera;
+  targetCamera: THREE.Camera;
   distance?: number; // Optional: For setting specific distances for gizmo and main cameras
 }
 
@@ -21,14 +21,14 @@ const syncCameras = ({ sourceCamera, targetCamera, distance }: CameraSyncParams)
   targetCamera.lookAt(0, 0, 0);
 
   // Update the projection matrix
-  targetCamera.updateProjectionMatrix();
+  targetCamera.updateMatrixWorld(true);
 };
 
-export const syncGizmoCameraWithMain = (gizmoCamera: THREE.PerspectiveCamera, mainCamera: THREE.PerspectiveCamera) => {
+export const syncGizmoCameraWithMain = (gizmoCamera: THREE.Camera, mainCamera: THREE.Camera) => {
   syncCameras({ sourceCamera: mainCamera, targetCamera: gizmoCamera, distance: 5 });
 };
 
-export const syncMainCameraWithGizmo = (mainCamera: THREE.PerspectiveCamera, gizmoCamera: THREE.PerspectiveCamera) => {
+export const syncMainCameraWithGizmo = (mainCamera: THREE.Camera, gizmoCamera: THREE.Camera) => {
   syncCameras({
     sourceCamera: gizmoCamera,
     targetCamera: mainCamera,
