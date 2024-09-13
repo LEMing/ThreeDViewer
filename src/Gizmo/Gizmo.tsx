@@ -13,6 +13,47 @@ interface GizmoProps {
   controls: OrbitControls | null;
   render: () => void;
 }
+const setupGizmo = (
+  gizmoRef: React.RefObject<HTMLDivElement>,
+  gizmoScene: THREE.Scene,
+  gizmoRenderer: THREE.WebGLRenderer,
+  gizmoCamera: THREE.PerspectiveCamera,
+  cubeRef: React.MutableRefObject<THREE.Group | null>,
+  camera: THREE.PerspectiveCamera,
+  controls: OrbitControls,
+  renderGizmo: () => void,
+  render: () => void
+) => {
+  // Настраиваем рендерер и камеру гизмо
+  setupRenderer(gizmoRenderer, gizmoRef.current!, gizmoCamera);
+
+  // Создаем и добавляем куб на сцену
+  const cube = GizmoCube(gizmoScene);
+  cubeRef.current = cube;
+
+  // Добавляем освещение
+  addLighting(gizmoScene, defaultOptions.lightning);
+
+  // Добавляем обработчик изменений камеры
+  const onChangeListener = () => syncCubeWithCamera(cube, camera, renderGizmo);
+  controls.addEventListener('change', onChangeListener);
+
+  // Настраиваем обработчики событий для куба
+  setupEventHandlers(cube, camera, render);
+
+  // Анимация рендеринга гизмо
+  const animate = () => {
+    requestAnimationFrame(animate);
+    gizmoRenderer.render(gizmoScene, gizmoCamera);
+  };
+  animate();
+
+  // Возвращаем функцию для очистки
+  return () => {
+    controls.removeEventListener('change', onChangeListener);
+    gizmoScene.clear(); // Очищаем сцену при размонтировании
+  };
+};
 
 const Gizmo: React.FC<GizmoProps> = ({ camera, controls, render }) => {
   const gizmoRef = useRef<HTMLDivElement | null>(null);
@@ -21,58 +62,36 @@ const Gizmo: React.FC<GizmoProps> = ({ camera, controls, render }) => {
   const gizmoCamera = useRef(new THREE.PerspectiveCamera(50, 1, 0.1, 100)).current;
   const cubeRef = useRef<THREE.Group | null>(null);
 
-
   const renderGizmo = useCallback(() => {
-    console.log('renderGizmo')
+    if (!cubeRef.current) return;
+    render();
     gizmoRenderer.render(gizmoScene, gizmoCamera);
-  }, []);
-
-  useEffect(() => {
-    const cube = cubeRef.current;
-    if (!gizmoRef.current || !cube || !camera ) return;
-    const syncCube = async() => {
-      console.log('initial sync');
-      await syncCubeWithCamera(cube, camera, renderGizmo);
-      console.log('synced');
-    }
-    syncCube().then(() => {
-      console.log('Promise resolved');
-    });
-  }, [camera, renderGizmo]);
+    console.log('rendered everything');
+  }, [render]);
 
   useEffect(() => {
     if (!gizmoRef.current || !camera || !controls) return;
 
-    // Настраиваем рендерер и камеру гизмо
-    setupRenderer(gizmoRenderer, gizmoRef.current, gizmoCamera);
+    // Настраиваем сцену и рендерер
+    const cleanup = setupGizmo(gizmoRef, gizmoScene, gizmoRenderer, gizmoCamera, cubeRef, camera, controls, renderGizmo, render);
 
-    // Создаем и добавляем куб на сцену
-    const cube = GizmoCube(gizmoScene);
-    cubeRef.current = cube;
+    return cleanup;
+  }, [camera, controls, gizmoRenderer, gizmoScene, gizmoCamera, renderGizmo, render]);
 
-    // Добавляем освещение
-    addLighting(gizmoScene, defaultOptions.lightning);
+  useEffect(() => {
+    const cube = cubeRef.current;
+    if (!cube || !camera) return;
 
-    const onChangeListener = () => syncCubeWithCamera(cube, camera, () => gizmoRenderer.render(gizmoScene, gizmoCamera));
-
-    // Синхронизация куба с внешней камерой
-    controls.addEventListener('change', onChangeListener);
-
-    // Обработка событий мыши
-    setupEventHandlers(cubeRef.current, camera, render);
-
-    // Анимация рендеринга гизмо
-    const animate = () => {
-      requestAnimationFrame(animate);
-      gizmoRenderer.render(gizmoScene, gizmoCamera);
+    const syncCube = async() => {
+      console.log('--initial sync');
+      await syncCubeWithCamera(cube, camera, renderGizmo);
+      console.log('--synced');
     };
-    animate();
 
-    return () => {
-      controls.removeEventListener('change', onChangeListener);
-      gizmoScene.clear(); // Очищаем сцену при размонтировании
-    };
-  }, [camera, controls, gizmoRenderer, gizmoScene, gizmoCamera]);
+    syncCube().then(() => {
+      console.log('Promise resolved');
+    });
+  }, [camera, renderGizmo]);
 
   return (
     <div
