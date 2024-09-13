@@ -1,38 +1,37 @@
-
 import * as THREE from 'three';
 
-export const syncGizmoCameraWithMain = (gizmoCamera: THREE.PerspectiveCamera, camera: THREE.PerspectiveCamera) => {
-  // Копируем ориентацию основной камеры в гизмо-камеру
-  gizmoCamera.quaternion.copy(camera.quaternion);
+interface CameraSyncParams {
+  sourceCamera: THREE.PerspectiveCamera;
+  targetCamera: THREE.PerspectiveCamera;
+  distance?: number; // Optional: For setting specific distances for gizmo and main cameras
+}
 
-  // Определяем направление, в котором смотрит гизмо-камера
-  const direction = new THREE.Vector3(0, 0, -1).applyQuaternion(gizmoCamera.quaternion).normalize();
+const syncCameras = ({ sourceCamera, targetCamera, distance }: CameraSyncParams) => {
+  // Copy the quaternion (orientation) from source to target
+  targetCamera.quaternion.copy(sourceCamera.quaternion);
 
-  // Устанавливаем позицию гизмо-камеры на фиксированное расстояние от центра
-  gizmoCamera.position.copy(direction.multiplyScalar(5).negate()); // Смещаем по направлению взгляда
+  // Determine the direction the target camera is facing
+  const direction = new THREE.Vector3(0, 0, -1).applyQuaternion(targetCamera.quaternion).normalize();
 
-  gizmoCamera.lookAt(0, 0, 0); // Гизмо-камера всегда смотрит на центр сцены
-  gizmoCamera.updateProjectionMatrix(); // Обновляем матрицу проекции
+  // Adjust the target camera's position based on the provided distance
+  const moveDistance = distance ?? sourceCamera.position.length(); // Use distance or original distance
+  targetCamera.position.copy(direction.multiplyScalar(-moveDistance));
+
+  // Target camera always looks at the center of the scene
+  targetCamera.lookAt(0, 0, 0);
+
+  // Update the projection matrix
+  targetCamera.updateProjectionMatrix();
 };
 
-export const syncMainCameraWithGizmo = (
-  camera: THREE.PerspectiveCamera,
-  gizmoCamera: THREE.PerspectiveCamera
-) => {
-  // Вычисляем расстояние от камеры до центра сцены
-  const originalDistance = camera.position.length(); // Расстояние до (0, 0, 0)
+export const syncGizmoCameraWithMain = (gizmoCamera: THREE.PerspectiveCamera, mainCamera: THREE.PerspectiveCamera) => {
+  syncCameras({ sourceCamera: mainCamera, targetCamera: gizmoCamera, distance: 5 });
+};
 
-  // Копируем ориентацию гизмо-камеры в основную камеру
-  camera.quaternion.copy(gizmoCamera.quaternion);
-
-  // Определяем направление, в котором смотрит основная камера
-  const direction = new THREE.Vector3(0, 0, -1)
-  .applyQuaternion(camera.quaternion)
-  .normalize();
-
-  // Устанавливаем позицию основной камеры на исходное расстояние от центра сцены
-  camera.position.copy(direction.multiplyScalar(-originalDistance)); // Смещаем по направлению взгляда
-
-  camera.lookAt(0, 0, 0); // Основная камера всегда смотрит на центр сцены
-  camera.updateProjectionMatrix(); // Обновляем матрицу проекции
+export const syncMainCameraWithGizmo = (mainCamera: THREE.PerspectiveCamera, gizmoCamera: THREE.PerspectiveCamera) => {
+  syncCameras({
+    sourceCamera: gizmoCamera,
+    targetCamera: mainCamera,
+    distance: mainCamera.position.length()
+  });
 };

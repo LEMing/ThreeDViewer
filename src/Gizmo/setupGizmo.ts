@@ -1,32 +1,42 @@
 import React from 'react';
 import * as THREE from 'three';
-import {OrbitControls} from 'three/examples/jsm/controls/OrbitControls';
-import {defaultOptions} from '../index';
-import {addLighting} from '../ThreeSceneSetup/addLighting';
-import {syncGizmoCameraWithMain, syncMainCameraWithGizmo} from './CameraController';
-import {GizmoCube} from './GizmoCube';
-import {setupRenderer} from './RendererSetup';
+import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls';
+import { defaultOptions } from '../index';
+import { addLighting } from '../ThreeSceneSetup/addLighting';
+import { syncGizmoCameraWithMain, syncMainCameraWithGizmo } from './CameraController';
+import { GizmoCube } from './GizmoCube';
+import { setupRenderer } from './RendererSetup';
 
-const setupGizmo = (
-  gizmoDiv: HTMLDivElement,
-  gizmoScene: THREE.Scene,
-  gizmoRenderer: THREE.WebGLRenderer,
-  gizmoCamera: THREE.PerspectiveCamera,
-  cubeRef: React.MutableRefObject<THREE.Group | null>,
-  mainCamera: THREE.PerspectiveCamera,
-  mainControls: OrbitControls,
-  renderGizmo: () => void,
-) => {
+interface GizmoParams {
+  gizmoDiv: HTMLDivElement;
+  gizmoScene: THREE.Scene;
+  gizmoRenderer: THREE.WebGLRenderer;
+  gizmoCamera: THREE.PerspectiveCamera;
+}
+
+interface MainParams {
+  mainCamera: THREE.PerspectiveCamera;
+  mainControls: OrbitControls;
+  renderGizmo: () => void;
+}
+
+interface SetupGizmoParams {
+  gizmo: GizmoParams;
+  main: MainParams;
+}
+
+const setupGizmo = ({ gizmo, main }: SetupGizmoParams) => {
+  const { gizmoDiv, gizmoScene, gizmoRenderer, gizmoCamera } = gizmo;
+  const { mainCamera, mainControls, renderGizmo } = main;
+
   setupRenderer(gizmoRenderer, gizmoDiv);
 
-  const cube = GizmoCube(gizmoScene);
-  cubeRef.current = cube;
+  GizmoCube(gizmoScene);
 
   addLighting(gizmoScene, defaultOptions.lightning);
 
-  const onChangeMainControlsListener = async () => {
-    syncGizmoCameraWithMain(gizmoCamera, mainCamera);
-  };
+  const onChangeMainControlsListener = () => syncGizmoCameraWithMain(gizmoCamera, mainCamera);
+
   mainControls.addEventListener('change', onChangeMainControlsListener);
 
   const gizmoControls = new OrbitControls(gizmoCamera, gizmoRenderer.domElement);
@@ -34,9 +44,8 @@ const setupGizmo = (
 
   const onChangeGizmoControlsListener = () => {
     syncMainCameraWithGizmo(mainCamera, gizmoCamera);
-    console.log('Gizmo mainCamera position:', gizmoCamera.position);
     renderGizmo();
-  }
+  };
 
   gizmoControls.addEventListener('change', onChangeGizmoControlsListener);
 

@@ -2,7 +2,7 @@ import React, {useCallback, useEffect, useRef, useState} from 'react';
 import * as THREE from 'three';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls';
 
-import {syncGizmoCameraWithMain} from './CameraController';
+import { syncGizmoCameraWithMain } from './CameraController';
 import setupGizmo from './setupGizmo';
 
 interface GizmoProps {
@@ -16,46 +16,41 @@ const Gizmo: React.FC<GizmoProps> = ({ camera, controls, render }) => {
   const gizmoScene = useRef(new THREE.Scene()).current;
   const gizmoRenderer = useRef(new THREE.WebGLRenderer({ alpha: true, antialias: true })).current;
   const gizmoCamera = useRef(new THREE.PerspectiveCamera(50, 1, 0.1, 100)).current;
-  const cubeRef = useRef<THREE.Group | null>(null);
-
-  // Принудительный рендеринг гизмо после каждой синхронизации
+ 
+  // Force rendering of the gizmo after synchronization
   const renderGizmo = useCallback(() => {
     render();
     gizmoRenderer.render(gizmoScene, gizmoCamera);
-  }, [render]);
+  }, [render, gizmoRenderer, gizmoScene, gizmoCamera]);
 
-  // Настройка сцены и рендерера
+  // Set up the gizmo scene and renderer
   useEffect(() => {
     const gizmoDiv = gizmoRef.current;
     if (!gizmoDiv || !camera || !controls) return;
 
-    const cleanup = setupGizmo(
-      gizmoDiv,
-      gizmoScene,
-      gizmoRenderer,
-      gizmoCamera,
-      cubeRef,
-      camera,
-      controls,
-      renderGizmo,
-    );
+    // Setup the gizmo with the necessary parameters
+    const cleanup = setupGizmo({
+      gizmo: {
+        gizmoDiv,
+        gizmoScene,
+        gizmoRenderer,
+        gizmoCamera,
+      },
+      main: {
+        mainCamera: camera,
+        mainControls: controls,
+        renderGizmo,
+      },
+    });
 
     return cleanup;
-  }, [camera, controls, gizmoRenderer, gizmoScene, gizmoCamera, renderGizmo, render]);
+  }, [camera, controls, gizmoRenderer, gizmoScene, gizmoCamera, renderGizmo]);
 
-  // Синхронизация куба с камерой и принудительный рендер
+  // Synchronize the gizmo camera with the main camera and force rendering
   useEffect(() => {
-    const cube = cubeRef.current;
-    if (!cube || !camera) return;
-
-    const sync = () => {
-      console.log('--initial sync');
-      syncGizmoCameraWithMain(gizmoCamera, camera);
-      console.log('--synced');
-      renderGizmo(); // Принудительный вызов рендеринга после синхронизации
-    };
-
-    sync();
+    if (!camera) return;
+    syncGizmoCameraWithMain(gizmoCamera, camera);
+    renderGizmo();
   }, [camera, renderGizmo]);
 
   return (

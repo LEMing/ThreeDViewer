@@ -18,8 +18,12 @@ const SimpleViewer: React.FC<SimpleViewerProps> = ({ object, options = defaultOp
   const sceneRef = options.threeBaseRefs.scene || useRef<THREE.Scene | null>(null);
   const controlsRef = options.threeBaseRefs.controls || useRef<OrbitControls | null>(null);
 
-  const [isInitialized, setIsInitialized] = useState(false); // Добавляем состояние для отслеживания инициализации камеры и контролов
+  const [forceUpdate, setForceUpdate] = useState(0);
 
+  useEffect(() => {
+    // Force a re-render after hot update to ensure synchronization
+    setForceUpdate(forceUpdate + 1);
+  }, []);
   const mergedOptions = useMemo<SimpleViewerOptions>(() => ({
     ...defaultOptions,
     ...options,
@@ -52,9 +56,6 @@ const SimpleViewer: React.FC<SimpleViewerProps> = ({ object, options = defaultOp
     sceneRef.current = scene;
     cameraRef.current = camera;
     controlsRef.current = controls;
-
-    // Устанавливаем флаг, что камера и контролы инициализированы
-    setIsInitialized(true);
 
     resize(); // Initial size update
 
