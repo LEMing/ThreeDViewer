@@ -45,7 +45,7 @@ export const addLighting = (scene: THREE.Scene, options: LightningOptions = defa
   scene.add(directionalLight);
 };
 
-const defaultLightningOptions = {
+export const defaultLightningOptions = {
   ambientLight: {
     color: '#404040',
     intensity: Math.PI,
