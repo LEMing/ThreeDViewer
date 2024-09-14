@@ -8,7 +8,8 @@ ThreeDViewer is a React component library for easily integrating Three.js-based 
 - Easy integration with React applications
 - Customizable viewer settings
 - Support for various 3D object formats
-- Built-in camera controls
+- Built-in camera and map controls
+- Optional gizmo controller
 - Responsive design
 - Ability to handle external scenes and Three.js objects
 
@@ -100,6 +101,7 @@ function App() {
       ...defaultOptions.helpers,
       grid: true,
       axes: true,
+      addGizmo: true, // New gizmo option
     },
    threeBaseRefs: {
       scene: sceneRef,
@@ -137,35 +139,84 @@ Props:
 `SimpleViewer` accepts an `options` prop for customization. Here's an overview of available options:
 
 ```javascript
-const defaultOptions = {
-   staticScene: true, // Stops rendering if there is no activity
-   backgroundColor: '#f0f0f7',
+const defaultOptions: SimpleViewerOptions = {
+   staticScene: true, // It stops animation loop if there is no interactions
+   backgroundColor: '#f0f0f7', // From BACKGROUND_COLOR constant
    camera: {
-      position: [6, 2, 1.2],
-      target: [0, 0, 0],
-      fov: 75,
-      near: 0.1,
-      far: 100000
-    },
-   lights: {
-      ambient: { color: '#404040', intensity: 1 },
-      hemisphere: { skyColor: '#ffffbb', groundColor: '#080820', intensity: 1 },
-      directional: { color: '#ffffff', intensity: 1, position: [6, 6, 6], castShadow: true }
-    },
+      cameraPosition: [2, 6, 2],
+      cameraTarget: [0, 0, 0], // Center of the scene
+      cameraFov: 75, // From initializeCamera
+      cameraNear: 0.1, // From initializeCamera
+      cameraFar: 100000, // From initializeCamera
+      autoFitToObject: true,
+   },
+   lightning: {
+      ambientLight: {
+         color: '#404040',
+         intensity: Math.PI,
+      },
+      hemisphereLight: {
+         skyColor: '#ffffbb',
+         groundColor: '#080820',
+         intensity: 1,
+      },
+      directionalLight: {
+         color: '#ffffff',
+         intensity: Math.PI,
+         position: new THREE.Vector3(6, 6, 6),
+         castShadow: true,
+         shadow: {
+            mapSize: {
+               width: 4096,
+               height: 4096,
+            },
+            camera: {
+               near: 0.5,
+               far: 50,
+               left: -10,
+               right: 10,
+               top: 10,
+               bottom: -10,
+            },
+            bias: -0.001,
+            radius: 1,
+         },
+      },
+   },
+   renderer: {
+      antialias: true,
+      alpha: false,
+      shadowMapEnabled: true,
+      pixelRatio: window.devicePixelRatio,
+      shadowMapType: THREE.VSMShadowMap,
+      toneMapping: THREE.ACESFilmicToneMapping,
+      toneMappingExposure: 1,
+   },
    controls: {
-      enableDamping: true,
-      dampingFactor: 0.25,
-      enableZoom: true,
-      enableRotate: true,
-      enablePan: true
-    },
+      type: ControlType.OrbitControls, // 'OrbitControls' or 'MapControls'
+      enabled: true, // Controls are used in setupScene
+      enableDamping: true, // From setupScene
+      dampingFactor: 0.25, // From setupScene
+      enableZoom: true, // From setupScene
+      enableRotate: true, // Default for OrbitControls
+      enablePan: true, // Default for OrbitControls
+   },
    helpers: {
-      grid: true,
-      axes: false,
-      boundingBox: true
-    },
-   animationLoop: null, // External animation function
-}
+      gridHelper: true,
+      color: '#333333',
+      axesHelper: false,
+      object3DHelper: false,
+      addGizmo: false, // new Gizmo control is disabled by default
+   },
+   threeBaseRefs: {
+      mountPoint: {current: null},
+      scene: { current: null },
+      camera: { current: null },
+      renderer: { current: null },
+      controls: { current: null },
+   },
+   animationLoop: null,
+};
 ```
 
 To use custom options, simply pass them to the `options` prop:

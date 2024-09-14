@@ -1,7 +1,8 @@
 import React, {useCallback, useEffect, useMemo, useRef, useState} from 'react';
 import * as THREE from 'three';
+import { MapControls } from 'three/examples/jsm/controls/MapControls';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls';
-import Gizmo from './Gizmo/Gizmo';
+import {Gizmo} from 'threedgizmo';
 
 import { cleanupScene } from './ThreeSceneSetup/cleanupScene';
 import { TIME_PER_FRAME } from './ThreeSceneSetup/constants';
@@ -16,7 +17,7 @@ const SimpleViewer: React.FC<SimpleViewerProps> = ({ object, options = defaultOp
   const rendererRef = options.threeBaseRefs.renderer || useRef<THREE.WebGLRenderer | null>(null);
   const cameraRef = options.threeBaseRefs.camera || useRef<THREE.PerspectiveCamera | null>(null);
   const sceneRef = options.threeBaseRefs.scene || useRef<THREE.Scene | null>(null);
-  const controlsRef = options.threeBaseRefs.controls || useRef<OrbitControls | null>(null);
+  const controlsRef = options.threeBaseRefs.controls || useRef<OrbitControls | MapControls | null>(null);
 
   const [forceUpdate, setForceUpdate] = useState(0);
 
@@ -71,9 +72,14 @@ const SimpleViewer: React.FC<SimpleViewerProps> = ({ object, options = defaultOp
 
   return (
     <>
-      {(
-        <Gizmo camera={cameraRef.current} controls={controlsRef.current} render={render} />
-      )}
+      {options.helpers.addGizmo? (
+        <Gizmo
+          // @ts-ignore
+          camera={cameraRef.current}
+          // @ts-ignore
+          controls={controlsRef.current}
+          render={render} />
+      ) : null}
     <div style={{ width: '100%', height: '100%' }} ref={mountRef}/>
     </>
   );

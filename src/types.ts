@@ -1,4 +1,5 @@
 import * as THREE from 'three';
+import {MapControls} from 'three/examples/jsm/controls/MapControls';
 import {OrbitControls} from 'three/examples/jsm/controls/OrbitControls';
 import {b} from 'vite/dist/node/types.d-aGj9QkWt';
 
@@ -68,6 +69,11 @@ export interface LightningOptions {
   };
 }
 
+export enum ControlType {
+  MapsControls = 'MapControls',
+  OrbitControls = 'OrbitControls'
+}
+
 export interface HelperOptions {
   gridHelper: boolean;
   color: string;
@@ -83,6 +89,7 @@ export interface SimpleViewerOptions {
   lightning: LightningOptions,
   renderer: RendererOptions,
   controls: {
+    type: ControlType,
     enabled: boolean;
     enableDamping: boolean;
     dampingFactor: number;
@@ -95,7 +102,7 @@ export interface SimpleViewerOptions {
     scene: {current: THREE.Scene | null};
     camera: {current: THREE.PerspectiveCamera | null};
     renderer: {current: THREE.WebGLRenderer | null};
-    controls: {current: OrbitControls | null};
+    controls: {current: OrbitControls | MapControls | null};
     mountPoint: {current: HTMLDivElement | null}
   },
   animationLoop: ((time: number) => void) | null;

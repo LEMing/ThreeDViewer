@@ -26,7 +26,7 @@ jest.mock('three', () => {
 jest.mock('../ThreeSceneSetup/setupScene');
 jest.mock('../ThreeSceneSetup/cleanupScene');
 jest.mock('../ThreeSceneSetup/updateSize');
-jest.mock('../Gizmo/getWebGLRenderer');
+jest.mock('threedgizmo');
 
 describe('SimpleViewer', () => {
   beforeEach(() => {

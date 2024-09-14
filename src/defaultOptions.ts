@@ -1,5 +1,5 @@
 import * as THREE from 'three';
-import { SimpleViewerOptions } from './types'; // Assuming you have a types file
+import {ControlType, SimpleViewerOptions} from './types'; // Assuming you have a types file
 
 const defaultOptions: SimpleViewerOptions = {
   staticScene: true, // It stops animation loop if there is no interactions
@@ -55,6 +55,7 @@ const defaultOptions: SimpleViewerOptions = {
     toneMappingExposure: 1,
   },
   controls: {
+    type: ControlType.OrbitControls,
     enabled: true, // Controls are used in setupScene
     enableDamping: true, // From setupScene
     dampingFactor: 0.25, // From setupScene

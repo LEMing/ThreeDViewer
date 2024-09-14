@@ -1,6 +1,11 @@
 Changelog
 =========
 
+0.5.0
+---
+Added support for MapControls
+Added an optional gizmo controller
+
 0.4.1
 ---
 * Update Readme
