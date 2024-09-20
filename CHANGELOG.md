@@ -1,6 +1,10 @@
 Changelog
 =========
 
+0.6.0
+---
+* Use threedgizmo 0.2.0
+
 0.5.0
 ---
 Added support for MapControls

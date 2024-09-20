@@ -1,7 +1,7 @@
 {
   "name": "threedviewer",
   "private": false,
-  "version": "0.5.0",
+  "version": "0.6.0",
   "type": "module",
   "description": "A 3D viewer based on React and Three.js",
   "keywords": [
@@ -59,7 +59,7 @@
     "vite-plugin-dts": "^4.0.3"
   },
   "dependencies": {
-    "threedgizmo": "0.1.0"
+    "threedgizmo": "0.2.0"
   },
   "peerDependencies": {
     "react": "^18.3.1",
