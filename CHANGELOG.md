@@ -1,6 +1,10 @@
 Changelog
 =========
 
+0.7.0
+---
+* Add studio background
+
 0.6.0
 ---
 * Use threedgizmo 0.2.0

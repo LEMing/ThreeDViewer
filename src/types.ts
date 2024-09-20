@@ -78,6 +78,7 @@ export interface HelperOptions {
   gridHelper: boolean;
   color: string;
   axesHelper: boolean;
+  studioEnvironment: boolean;
   object3DHelper: boolean;
   addGizmo: boolean;
 }

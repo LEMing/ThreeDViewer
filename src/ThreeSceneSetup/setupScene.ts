@@ -1,18 +1,20 @@
+import {useEffect} from 'react';
 import * as THREE from 'three';
-import {MapControls} from 'three/examples/jsm/controls/MapControls';
-import {OrbitControls} from 'three/examples/jsm/controls/OrbitControls';
+import { MapControls } from 'three/examples/jsm/controls/MapControls';
+import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls';
 
 import FloorAligner from '../FloorAligner';
-import {ControlType, SimpleViewerOptions} from '../types';
-import {throttle} from '../utils';
-import {addHelpers} from './addHelpers';
-import {addLighting} from './addLighting';
-import {TIME_PER_FRAME} from './constants';
-import {fitCameraToObject} from './fitCameraToObject';
-import {initializeCamera} from './initializeCamera';
-import {initializeRenderer} from './initializeRenderer';
-import {initializeScene} from './initializeScene';
-import {THREEBase} from './types';
+import { ControlType, SimpleViewerOptions } from '../types';
+import { throttle } from '../utils';
+import { addHelpers } from './addHelpers';
+import { addLighting } from './addLighting';
+import { TIME_PER_FRAME } from './constants';
+import {createGradientBackground} from './createGradientBackground';
+import { fitCameraToObject } from './fitCameraToObject';
+import { initializeCamera } from './initializeCamera';
+import { initializeRenderer } from './initializeRenderer';
+import { initializeScene } from './initializeScene';
+import { THREEBase } from './types';
 
 export const setupScene = (
   threeBase: THREEBase,
@@ -32,6 +34,13 @@ export const setupScene = (
   rendererRef.current = renderer;
   cameraRef.current = camera;
   sceneRef.current = scene;
+  const width = mountRef.current.clientWidth;
+  const height = mountRef.current.clientHeight;
+  const size = new THREE.Vector2(width * 3, height * 3)
+
+  if (options.helpers.studioEnvironment) {
+    createGradientBackground(scene, size);
+  }
 
   mountRef.current.appendChild(renderer.domElement);
 
@@ -50,9 +59,8 @@ export const setupScene = (
   addLighting(scene, options.lightning);
   addHelpers(scene, object, options.helpers);
 
-  // const controls = new OrbitControls(camera, renderer.domElement);
   const controls = options.controls.type === ControlType.MapsControls
-    ? new MapControls( camera, renderer.domElement )
+    ? new MapControls(camera, renderer.domElement)
     : new OrbitControls(camera, renderer.domElement);
 
   Object.assign(controls, options.controls);

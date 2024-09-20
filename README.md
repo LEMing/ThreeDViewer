@@ -3,7 +3,7 @@
 
 ThreeDViewer is a React component library for easily integrating Three.js-based 3D viewers into your web applications. It provides a simple and customizable way to display and interact with 3D objects in your React projects.
 
-![ThreeDGizmo Preview](https://github.com/LEMing/ThreeDViewer/raw/main/src/assets/cover.png)
+![ThreeDGizmo Preview](https://github.com/LEMing/ThreeDViewer/raw/main/src/assets/cover-dark.png)
 
 ## Features
 

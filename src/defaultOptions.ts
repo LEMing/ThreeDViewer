@@ -65,7 +65,8 @@ const defaultOptions: SimpleViewerOptions = {
   },
   helpers: {
     gridHelper: true,
-    color: '#333333',
+    studioEnvironment: true,
+    color: '#AAAAAA',
     axesHelper: false,
     object3DHelper: false,
     addGizmo: false,

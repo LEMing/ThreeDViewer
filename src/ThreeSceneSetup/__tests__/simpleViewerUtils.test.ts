@@ -1,8 +1,8 @@
 import * as THREE from 'three';
+import {mockContext} from '../../__mocks__/mock2DContext';
 import {mockRenderer} from '../../__mocks__/mockRenderer';
 import defaultOptions from '../../defaultOptions';
 
-import {addHelpers} from '../addHelpers';
 import {addLighting} from '../addLighting';
 import {cleanupScene} from '../cleanupScene';
 import {fitCameraToObject} from '../fitCameraToObject';
@@ -19,6 +19,12 @@ jest.mock('three', () => {
     ...originalThree,
     WebGLRenderer: jest.fn(() => mockRenderer),
   };
+});
+
+jest.mock('../get2DContext', () => {
+  return {
+    get2DContext: jest.fn(() => mockContext),
+  }
 });
 
 describe('Scene setup functions', () => {
