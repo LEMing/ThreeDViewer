@@ -3,6 +3,7 @@
 
 ThreeDViewer is a React component library for easily integrating Three.js-based 3D viewers into your web applications. It provides a simple and customizable way to display and interact with 3D objects in your React projects.
 
+![ThreeDGizmo Preview](https://github.com/LEMing/ThreeDViewer/raw/main/src/assets/cover-raytracing.png)
 ![ThreeDGizmo Preview](https://github.com/LEMing/ThreeDViewer/raw/main/src/assets/cover-dark.png)
 
 ## Features
@@ -14,6 +15,9 @@ ThreeDViewer is a React component library for easily integrating Three.js-based 
 - Optional gizmo controller
 - Responsive design
 - Ability to handle external scenes and Three.js objects
+- Path tracing for high-quality rendering with customizable parameters
+- Environment map support for realistic lighting and reflections
+- Screenshot capture when rendering is complete (optional)
 
 ## Installation
 
@@ -218,66 +222,47 @@ const defaultOptions: SimpleViewerOptions = {
       controls: { current: null },
    },
    animationLoop: null,
-};
-```
-
-To use custom options, simply pass them to the `options` prop:
-
-```tsx
-const customOptions = {
-   ...defaultOptions,
-   backgroundColor: '#000000',
-   camera: {
-      ...defaultOptions.camera,
-      position: [12 * 6, 12 * 6, 12 * 6],
-      target: [0, 0, 0],
-      fov: 60,
+   usePathTracing: true, // Enables path tracing for high-quality rendering
+   maxSamplesPathTracing: 300, // Limits the number of samples for path tracing
+   envMapUrl: 'https://cdn.polyhaven.com/asset_img/primary/belfast_sunset_puresky.png', // Environment map URL for lighting and reflections
+   pathTracingSettings: {
+      bounces: 8,
+      transmissiveBounces: 4,
+      lowResScale: 0.7,
+      renderScale: 1.0,
+      enablePathTracing: true,
+      dynamicLowRes: true,
    },
+   replaceWithScreenshotOnComplete: false, // Option to replace viewer with a screenshot after path tracing is complete
+   studioEnvironment: true, // Enables a studio-like lighting environment
 };
 ```
 
-## Development
+### Path Tracing
 
-To set up the project for development:
+ThreeDViewer now supports path tracing for high-quality rendering with customizable settings:
 
-1. Clone the repository:
-   ```
-   git clone https://github.com/LEMing/threedviewer.git
-   ```
+- `usePathTracing`: Enables or disables path tracing.
+- `maxSamplesPathTracing`: Limits the number of path tracing samples to prevent infinite rendering.
+- `pathTracingSettings`: Customizes path tracing settings, including:
+   - `bounces`: Number of light bounces.
+   - `transmissiveBounces`: Number of transmissive bounces.
+   - `lowResScale`: Low-resolution scale factor for performance optimization.
+   - `renderScale`: Controls the overall rendering scale.
+   - `enablePathTracing`: Enables the path tracing mode.
+   - `dynamicLowRes`: Adjusts resolution dynamically based on performance.
 
-2. Install dependencies:
-   ```
-   cd ThreeDViewer
-   make install
-   ```
+### Environment Map
 
-3. Run the development server:
-   ```
-   make dev
-   ```
+To improve lighting and reflections, ThreeDViewer supports environment maps:
 
-4. Build the project:
-   ```
-   make build
-   ```
+- `envMapUrl`: You can provide a URL to an environment map. For example:
+  ```
+  envMapUrl: 'https://cdn.polyhaven.com/asset_img/primary/sunset_in_the_chalk_quarry.png'
+  ```
 
-## Testing
+This will automatically load and apply the environment map to the scene.
 
-Run the test suite with:
+### Experimental: Replace Viewer with Screenshot
 
-```bash
-make test
-```
-
-## Contributing
-
-Contributions are welcome! Please feel free to submit a Pull Request.
-
-## License
-
-This project is licensed under the MIT License
-
-## Acknowledgments
-
-- [Three.js](https://threejs.org/) for providing the 3D rendering capabilities
-- [React](https://reactjs.org/) for the component-based architecture
+If `replaceWithScreenshotOnComplete` is set to `true`, the viewer will be replaced with a static image once path tracing completes.

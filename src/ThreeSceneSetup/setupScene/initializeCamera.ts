@@ -1,15 +1,7 @@
 import * as THREE from 'three';
-import {CameraOptions} from '../types';
+import {CameraOptions} from '../../types';
 
-export const initializeCamera = (aspectRatio: number, cameraOptions: CameraOptions) => {
-
-  const camera = new THREE.PerspectiveCamera(
-    cameraOptions.cameraFov || 75,
-    aspectRatio,
-    cameraOptions.cameraNear || 0.1,
-    cameraOptions.cameraFar || 100000
-  );
-
+export const initializeCamera = (camera: THREE.Camera, cameraOptions: CameraOptions) => {
   // Set camera position
   if (cameraOptions.cameraPosition) {
     camera.position.copy(new THREE.Vector3().fromArray(cameraOptions.cameraPosition));

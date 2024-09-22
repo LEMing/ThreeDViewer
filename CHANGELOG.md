@@ -1,6 +1,11 @@
 Changelog
 =========
 
+0.8.0
+---
+* Add support for three-gpu-pathtracer rendering
+* Add env map support for realistic lighting and reflections
+
 0.7.0
 ---
 * Add studio background

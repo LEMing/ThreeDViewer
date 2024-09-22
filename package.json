@@ -1,7 +1,7 @@
 {
   "name": "threedviewer",
   "private": false,
-  "version": "0.7.0",
+  "version": "0.8.0",
   "type": "module",
   "description": "A 3D viewer based on React and Three.js",
   "keywords": [
@@ -22,7 +22,7 @@
     "dev": "vite",
     "build": "NODE_ENV=production tsc && vite build",
     "preview": "vite preview",
-    "test": "jest",
+    "test": "jest --runInBand",
     "prepublishOnly": "npm run build && npm run test",
     "postpublish": "echo 'Published successfully!'"
   },
@@ -47,6 +47,7 @@
     "@testing-library/jest-dom": "^6.4.8",
     "@testing-library/react": "^16.0.0",
     "@types/jest": "^29.5.12",
+    "@types/lodash": "^4.17.7",
     "@types/react": "^18.3.3",
     "@types/react-dom": "^18.3.0",
     "@types/three": "0.168.0",
@@ -59,6 +60,7 @@
     "vite-plugin-dts": "^4.0.3"
   },
   "dependencies": {
+    "three-gpu-pathtracer": "^0.0.23",
     "threedgizmo": "0.2.0"
   },
   "peerDependencies": {

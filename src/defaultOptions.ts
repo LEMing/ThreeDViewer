@@ -3,14 +3,25 @@ import {ControlType, SimpleViewerOptions} from './types'; // Assuming you have a
 
 const defaultOptions: SimpleViewerOptions = {
   staticScene: true, // It stops animation loop if there is no interactions
+  usePathTracing: false, // Path tracing is not optimised
+  maxSamplesPathTracing: 300,
+  envMapUrl: 'https://cdn.polyhaven.com/asset_img/primary/belfast_sunset_puresky.png?height=720',
+  pathTracingSettings: {
+    bounces: 8,
+    transmissiveBounces: 4,
+    lowResScale: 0.7,
+    renderScale: 1.0,
+    enablePathTracing: true,
+    dynamicLowRes: true,
+  },
   backgroundColor: '#f0f0f7', // From BACKGROUND_COLOR constant
   camera: {
-    cameraPosition: [2, 6, 2],
+    cameraPosition: [60, 60, 60],
     cameraTarget: [0, 0, 0], // Center of the scene
     cameraFov: 75, // From initializeCamera
     cameraNear: 0.1, // From initializeCamera
     cameraFar: 100000, // From initializeCamera
-    autoFitToObject: true,
+    autoFitToObject: false,
   },
   lightning: {
     ambientLight: {
@@ -40,7 +51,7 @@ const defaultOptions: SimpleViewerOptions = {
           top: 10,
           bottom: -10,
         },
-        bias: -0.001,
+        bias: -0.0001,
         radius: 1,
       },
     },
@@ -79,6 +90,7 @@ const defaultOptions: SimpleViewerOptions = {
     controls: { current: null },
   },
   animationLoop: null,
+  replaceWithScreenshotOnComplete: false,
 };
 
 export default defaultOptions;

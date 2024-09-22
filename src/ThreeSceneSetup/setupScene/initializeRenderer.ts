@@ -1,5 +1,5 @@
 import * as THREE from 'three';
-import { RendererOptions } from '../types';
+import { RendererOptions } from '../../types';
 
 export const initializeRenderer = (rendererOptions: RendererOptions) => {
   const renderer = new THREE.WebGLRenderer({

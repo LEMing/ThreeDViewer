@@ -1,5 +1,4 @@
 import * as THREE from 'three';
-import FloorAligner from './FloorAligner';
 import Resizer from './Resizer';
 import {LoaderGLB} from './types';
 

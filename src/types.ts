@@ -84,6 +84,16 @@ export interface HelperOptions {
 }
 
 export interface SimpleViewerOptions {
+  usePathTracing: boolean;
+  maxSamplesPathTracing: number;
+  pathTracingSettings?: {
+    bounces?: number;
+    transmissiveBounces?: number;
+    lowResScale?: number;
+    renderScale?: number;
+    enablePathTracing?: boolean;
+    dynamicLowRes?: boolean;
+  };
   staticScene: boolean;
   backgroundColor: string;
   camera: CameraOptions
@@ -99,12 +109,14 @@ export interface SimpleViewerOptions {
     enablePan: boolean;
   }
   helpers: HelperOptions,
+  envMapUrl?: string;
   threeBaseRefs: {
     scene: {current: THREE.Scene | null};
-    camera: {current: THREE.PerspectiveCamera | null};
+    camera: {current: THREE.Camera | null};
     renderer: {current: THREE.WebGLRenderer | null};
     controls: {current: OrbitControls | MapControls | null};
     mountPoint: {current: HTMLDivElement | null}
   },
   animationLoop: ((time: number) => void) | null;
+  replaceWithScreenshotOnComplete?: boolean;
 }

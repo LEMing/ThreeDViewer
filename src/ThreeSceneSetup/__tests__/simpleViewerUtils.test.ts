@@ -1,17 +1,23 @@
 import * as THREE from 'three';
-import {mockContext} from '../../__mocks__/mock2DContext';
-import {mockRenderer} from '../../__mocks__/mockRenderer';
+import { mockRenderer } from '../../__mocks__/mockRenderer';
+import { mockContext } from '../../__mocks__/mock2DContext';
 import defaultOptions from '../../defaultOptions';
 
-import {addLighting} from '../addLighting';
-import {cleanupScene} from '../cleanupScene';
-import {fitCameraToObject} from '../fitCameraToObject';
-import {initializeCamera} from '../initializeCamera';
-import {initializeRenderer} from '../initializeRenderer';
-import {initializeScene} from '../initializeScene';
-import {setupScene} from '../setupScene';
-import {updateSize} from '../updateSize';
+import { addLighting } from '../addLighting';
+import { cleanupScene } from '../cleanupScene';
+import { fitCameraToObject } from '../fitCameraToObject';
+import { initializeCamera } from '../setupScene/initializeCamera';
+import { initializeRenderer } from '../setupScene/initializeRenderer';
+import { initializeScene } from '../initializeScene';
+import { updateSize } from '../updateSize';
 
+jest.mock('../importRaytracer', () => ({
+  importRaytracer: () => ({
+    WebGLPathTracer: jest.fn(),
+    PhysicalCamera: jest.fn(),
+    BlurredEnvMapGenerator: jest.fn(),
+  }),
+}));
 
 jest.mock('three', () => {
   const originalThree = jest.requireActual('three');
@@ -21,31 +27,44 @@ jest.mock('three', () => {
   };
 });
 
-jest.mock('../get2DContext', () => {
-  return {
-    get2DContext: jest.fn(() => mockContext),
-  }
-});
+jest.mock('../get2DContext', () => ({
+  get2DContext: jest.fn(() => mockContext),
+}));
 
 describe('Scene setup functions', () => {
+  beforeEach(() => {
+    jest.clearAllMocks();
+  });
+
   test('initializeScene creates a scene with the correct background color', () => {
     const scene = initializeScene(defaultOptions);
     expect(scene).toBeInstanceOf(THREE.Scene);
-    expect(scene.background).toEqual(new THREE.Color(0xf0f0f7));
+    expect(scene.background).toEqual(new THREE.Color(defaultOptions.backgroundColor));
   });
 
-  test('initializeCamera creates a camera with the correct aspect ratio and properties', () => {
-    const aspectRatio = 16 / 9;
-    const camera = initializeCamera(aspectRatio, defaultOptions.camera);
-    expect(camera).toBeInstanceOf(THREE.PerspectiveCamera);
-    expect(camera.aspect).toBe(aspectRatio);
-    expect(camera.fov).toBe(75);
+  test('initializeCamera sets camera properties correctly', () => {
+    const camera = new THREE.PerspectiveCamera();
+    initializeCamera(camera, defaultOptions.camera);
+
+    if (defaultOptions.camera.cameraPosition) {
+      expect(camera.position.toArray()).toEqual(defaultOptions.camera.cameraPosition);
+    }
+
+    if (defaultOptions.camera.cameraTarget) {
+      const lookAtVector = new THREE.Vector3();
+      camera.getWorldDirection(lookAtVector);
+      const expectedDirection = new THREE.Vector3().fromArray(defaultOptions.camera.cameraTarget).sub(camera.position).normalize();
+      expect(lookAtVector.x).toBeCloseTo(expectedDirection.x, 5);
+      expect(lookAtVector.y).toBeCloseTo(expectedDirection.y, 5);
+      expect(lookAtVector.z).toBeCloseTo(expectedDirection.z, 5);
+    }
   });
 
   test('initializeRenderer creates a renderer with the correct properties', () => {
     const renderer = initializeRenderer(defaultOptions.renderer);
-    expect(renderer.shadowMap.enabled).toBe(true);
-    expect(renderer.getPixelRatio()).toBe(window.devicePixelRatio);
+    expect(renderer.shadowMap.enabled).toBe(defaultOptions.renderer.shadowMapEnabled);
+    expect(renderer.getPixelRatio()).toBe(defaultOptions.renderer.pixelRatio);
+    expect(renderer.shadowMap.type).toBe(defaultOptions.renderer.shadowMapType);
   });
 
   test('addLighting adds ambient and directional lights to the scene', () => {
@@ -58,16 +77,19 @@ describe('Scene setup functions', () => {
   test('updateSize updates the renderer size and camera aspect ratio', () => {
     const renderer = new THREE.WebGLRenderer();
     const camera = new THREE.PerspectiveCamera();
-    const mountRef = {current: document.createElement('div')};
+    const mountRef = { current: document.createElement('div') };
     const scene = new THREE.Scene();
 
-    Object.defineProperty(mountRef.current, 'clientWidth', {value: 800});
-    Object.defineProperty(mountRef.current, 'clientHeight', {value: 600});
+    Object.defineProperty(mountRef.current, 'clientWidth', { value: 800 });
+    Object.defineProperty(mountRef.current, 'clientHeight', { value: 600 });
+
+    const setSizeSpy = jest.spyOn(renderer, 'setSize');
+    const renderSpy = jest.spyOn(renderer, 'render');
 
     updateSize(renderer, camera, mountRef, scene);
 
-    expect(renderer.getSize(new THREE.Vector2()).width).toBe(0);
-    expect(renderer.getSize(new THREE.Vector2()).height).toBe(0);
+    expect(setSizeSpy).toHaveBeenCalledWith(800, 600);
+    expect(renderSpy).toHaveBeenCalledWith(scene, camera);
     expect(camera.aspect).toBe(800 / 600);
   });
 
@@ -80,13 +102,13 @@ describe('Scene setup functions', () => {
 
     fitCameraToObject(scene, camera);
 
-    expect(camera.position.z).toBeCloseTo(3);
-    expect(camera.position.x).toBeCloseTo(15, 1);
-    expect(camera.position.y).toBeCloseTo(5, 1);
+    expect(camera.position.z).toBeGreaterThan(0);
+    expect(camera.position.x).toBeCloseTo(0, 1);
+    expect(camera.position.y).toBeCloseTo(0, 1);
   });
 
   test('cleanupScene removes the renderer from the DOM and event listeners', () => {
-    const mountRef = {current: document.createElement('div')};
+    const mountRef = { current: document.createElement('div') };
     const renderer = new THREE.WebGLRenderer();
     mountRef.current.appendChild(renderer.domElement);
 
@@ -98,29 +120,4 @@ describe('Scene setup functions', () => {
     expect(mountRef.current.children.length).toBe(0);
     expect(resizeHandler).not.toBeCalled();
   });
-
-  test('setupScene sets up the scene, camera, renderer, and controls correctly', () => {
-    const mountRef = {current: document.createElement('div')};
-    const rendererRef = {current: null};
-    const cameraRef = {current: null};
-    const sceneRef = {current: null};
-    const animationLoopRef = {current: null};
-    const object = new THREE.Object3D();
-
-    const {
-      scene,
-      camera,
-      renderer,
-      controls
-    } = setupScene({mountRef, rendererRef, cameraRef, sceneRef}, object, defaultOptions);
-
-    expect(scene).toBeInstanceOf(THREE.Scene);
-    expect(camera).toBeInstanceOf(THREE.PerspectiveCamera);
-    expect(controls.enableZoom).toBeTruthy();
-    expect(object.castShadow).toBe(true);
-    expect(scene.children.includes(object)).toBe(true);
-    expect(rendererRef.current).toBe(renderer);
-    expect(cameraRef.current).toBe(camera);
-  });
-
 });

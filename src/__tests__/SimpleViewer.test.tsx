@@ -1,43 +1,48 @@
-import {render} from '@testing-library/react';
+import { render } from '@testing-library/react';
 import * as THREE from 'three';
-import {cleanupScene} from '../ThreeSceneSetup/cleanupScene';
-import {setupScene} from '../ThreeSceneSetup/setupScene';
-import {updateSize} from '../ThreeSceneSetup/updateSize';
-
+import {mockRenderer} from '../__mocks__/mockRenderer';
+import { cleanupScene } from '../ThreeSceneSetup/cleanupScene';
+import { SceneManager } from '../ThreeSceneSetup/setupScene/SceneManager';
 import SimpleViewer from '../SimpleViewer';
-
-
-const mockCanvas = document.createElement('canvas');
-jest.mock('three', () => {
-  const originalThree = jest.requireActual('three');
+jest.mock('threedgizmo', () => ({
+  Gizmo: () => null,
+}));
+jest.mock('../ThreeSceneSetup/importRaytracer', () => {
   return {
-    ...originalThree,
-    WebGLRenderer: jest.fn(() => ({
-      setPixelRatio: jest.fn(),
-      shadowMap: {enabled: true},
-      setSize: jest.fn(),
-      getSize: jest.fn(() => ({width: 800, height: 600})),
-      domElement: mockCanvas,
-      render: jest.fn(),
-    })),
+    importRaytracer: () => {
+      return {
+        WebGLPathTracer: jest.fn(),
+        PhysicalCamera: jest.fn(),
+        BlurredEnvMapGenerator: jest.fn(),
+      };
+    },
   };
 });
 
-jest.mock('../ThreeSceneSetup/setupScene');
-jest.mock('../ThreeSceneSetup/cleanupScene');
-jest.mock('../ThreeSceneSetup/updateSize');
+jest.mock('../ThreeSceneSetup/cleanupScene', () => ({
+  cleanupScene: jest.fn(),
+}));
+
+const mockCanvas = document.createElement('canvas');
+
 jest.mock('threedgizmo');
 
-describe('SimpleViewer', () => {
-  beforeEach(() => {
-    (setupScene as jest.Mock).mockReturnValue({
-      scene: new THREE.Scene(),
-      camera: new THREE.PerspectiveCamera(),
-      renderer: new THREE.WebGLRenderer(),
-      controls: {update: jest.fn()},
-    });
-  });
+jest.mock('../ThreeSceneSetup/setupScene/SceneManager', () => {
+  return {
+    SceneManager: jest.fn().mockImplementation(() => {
+      return {
+        getSceneElements: jest.fn().mockReturnValue({
+          scene: new THREE.Scene(),
+          camera: new THREE.PerspectiveCamera(),
+          renderer: mockRenderer,
+          controls: { update: jest.fn(), addEventListener: jest.fn(), removeEventListener: jest.fn() },
+        }),
+      };
+    }),
+  };
+});
 
+describe('SimpleViewer', () => {
   afterEach(() => {
     jest.clearAllMocks();
   });
@@ -49,20 +54,19 @@ describe('SimpleViewer', () => {
   test('calls setupScene and updates size on mount', () => {
     render(<SimpleViewer object={new THREE.Object3D()} />);
 
-    expect(setupScene).toHaveBeenCalled();
-    expect(updateSize).toHaveBeenCalled();
+    expect(SceneManager).toHaveBeenCalled();
   });
 
   test('adds resize event listener on mount and removes it on unmount', () => {
     const addEventListenerSpy = jest.spyOn(window, 'addEventListener');
-    const {unmount} = render(<SimpleViewer object={new THREE.Object3D()} />);
+    const { unmount } = render(<SimpleViewer object={new THREE.Object3D()} />);
 
     expect(addEventListenerSpy).toHaveBeenCalledWith('resize', expect.any(Function));
     unmount();
   });
 
   test('calls cleanupScene on unmount', () => {
-    const {unmount} = render(<SimpleViewer object={new THREE.Object3D()} />);
+    const { unmount } = render(<SimpleViewer object={new THREE.Object3D()} />);
     unmount();
     expect(cleanupScene).toHaveBeenCalled();
   });

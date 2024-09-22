@@ -4,7 +4,8 @@ export default {
   moduleNameMapper: {
     '^three/examples/jsm/controls/OrbitControls$': '<rootDir>/src/__mocks__/OrbitControlsMock.ts',
     '^three/examples/jsm/controls/MapControls$': '<rootDir>/src/__mocks__/MapControlsMock.ts',
-    '^three/examples/jsm/loaders/GLTFLoader$': '<rootDir>/src/__mocks__/GLTFLoaderMock.ts'
+    '^three/examples/jsm/loaders/GLTFLoader$': '<rootDir>/src/__mocks__/GLTFLoaderMock.ts',
+    '^three$': '<rootDir>/node_modules/three',
   },
   transform: {
     '^.+\\.(ts|tsx)$': ['ts-jest', {
