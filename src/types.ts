@@ -1,7 +1,6 @@
 import * as THREE from 'three';
 import {MapControls} from 'three/examples/jsm/controls/MapControls';
 import {OrbitControls} from 'three/examples/jsm/controls/OrbitControls';
-import {b} from 'vite/dist/node/types.d-aGj9QkWt';
 
 export type LoaderGLB = {
   load: (
@@ -12,7 +11,7 @@ export type LoaderGLB = {
 }
 
 export interface SimpleViewerProps {
-  object: THREE.Object3D | null; // Pass any Three.js object
+  object: THREE.Object3D | null | string; // Pass any Three.js object or an url to a glb file
   options?: SimpleViewerOptions;
 }
 

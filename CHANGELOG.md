@@ -1,6 +1,10 @@
 Changelog
 =========
 
+0.9.0
+---
+* Add ability to send an url as an input object
+
 0.8.0
 ---
 * Add support for three-gpu-pathtracer rendering

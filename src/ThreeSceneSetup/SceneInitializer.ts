@@ -59,7 +59,7 @@ export class SceneInitializer {
     this.controls.update();
   }
 
-  private setupObjectInScene() {
+  private async setupObjectInScene() {
     if (this.object) {
       this.object.castShadow = true;
       this.object.traverse((child) => {

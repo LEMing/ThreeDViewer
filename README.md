@@ -35,6 +35,26 @@ yarn add threedviewer
 
 ## Usage
 
+Here's a super simple example of how to use the `SimpleViewer` component in your React application:
+You just need to pass a url model and use it as a regular jsx component.
+
+```jsx
+import React from 'react';
+import { SimpleViewer } from 'threedviewer';
+
+function App() {
+   return (
+      <div style={{ width: '100%', height: '400px' }}>
+        <SimpleViewer object={'https://modelviewer.dev/shared-assets/models/RobotExpressive.glb'} />
+      </div>
+   );
+}
+
+export default App;
+
+```
+
+
 Here's a basic example of how to use the `SimpleViewer` component:
 
 ```jsx

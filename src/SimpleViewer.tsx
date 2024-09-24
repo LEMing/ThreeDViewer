@@ -2,13 +2,15 @@ import React, {useCallback, useEffect, useMemo, useRef, useState} from 'react';
 import * as THREE from 'three';
 import {MapControls} from 'three/examples/jsm/controls/MapControls';
 import {OrbitControls} from 'three/examples/jsm/controls/OrbitControls';
+import {GLTFLoader} from 'three/examples/jsm/loaders/GLTFLoader';
 import {Gizmo} from 'threedgizmo';
+import {loadModel} from './loadModel';
 
 import {cleanupScene} from './ThreeSceneSetup/cleanupScene';
 import {TIME_PER_FRAME} from './ThreeSceneSetup/constants';
 import {SceneManager} from './ThreeSceneSetup/setupScene/SceneManager';
 import {updateSize} from './ThreeSceneSetup/updateSize';
-import {SimpleViewerProps, SimpleViewerOptions} from './types';
+import {SimpleViewerProps, SimpleViewerOptions, LoaderGLB} from './types';
 import {throttle} from './utils';
 import defaultOptions from './defaultOptions';
 
@@ -19,12 +21,28 @@ const SimpleViewer: React.FC<SimpleViewerProps> = ({ object, options = defaultOp
   const sceneRef = options.threeBaseRefs.scene || useRef<THREE.Scene | null>(null);
   const controlsRef = options.threeBaseRefs.controls || useRef<OrbitControls | MapControls | null>(null);
 
+  const initModel = () => {
+    if (typeof object === 'string') {
+      return null;
+    } else {
+      return object
+    }
+  }
+
+  const [inputModelObject, setInputModelObject] = useState<THREE.Object3D | null>(initModel());
+
   const [forceUpdate, setForceUpdate] = useState(0);
   const [completedImage, setRenderCompleteImage] = useState<string | null>(null); // Стейт для изображения
   const [sceneManager, setSceneManager] = useState<SceneManager | null>(null);
 
   useEffect(() => {
-    setForceUpdate(forceUpdate + 1);
+    if (typeof object === 'string') {
+      const loader = new GLTFLoader();
+      loadModel(object, loader as LoaderGLB).then(setInputModelObject);
+      setForceUpdate(forceUpdate + 1);
+    } else {
+      setInputModelObject(object);
+    }
   }, []);
 
   const mergedOptions = useMemo<SimpleViewerOptions>(() => ({
@@ -44,8 +62,7 @@ const SimpleViewer: React.FC<SimpleViewerProps> = ({ object, options = defaultOp
     const resizeHandler = throttle(resize, TIME_PER_FRAME);
     const threeBase = { mountRef, rendererRef, cameraRef, sceneRef };
 
-    // Инициализация SceneManager с передачей функции для управления завершенным рендером (image)
-    const sceneManagerInstance = new SceneManager(threeBase, object, mergedOptions, setRenderCompleteImage);
+    const sceneManagerInstance = new SceneManager(threeBase, inputModelObject, mergedOptions, setRenderCompleteImage);
     setSceneManager(sceneManagerInstance);
 
     const {
@@ -65,13 +82,12 @@ const SimpleViewer: React.FC<SimpleViewerProps> = ({ object, options = defaultOp
 
     window.addEventListener('resize', resizeHandler);
     return () => cleanupScene(mountRef, renderer, resizeHandler);
-  }, [object, mergedOptions, resize]);
+  }, [object, mergedOptions, resize, inputModelObject]);
 
   const render = useCallback(() => {
     if (rendererRef.current && controlsRef.current) {
       controlsRef.current.update();
 
-      // Если Path Tracer активен, обновляем его
       if (mergedOptions.usePathTracing && sceneManager && sceneManager.pathTracingManager) {
         sceneManager.pathTracingManager.updatePathTracerRenderer();
         sceneManager.pathTracingManager.ptRenderer.renderSample();
@@ -81,7 +97,6 @@ const SimpleViewer: React.FC<SimpleViewerProps> = ({ object, options = defaultOp
     }
   }, [sceneManager]);
 
-  // Если рендер завершен и опция `replaceWithScreenshotOnComplete` включена, показать изображение
   if (mergedOptions.replaceWithScreenshotOnComplete && completedImage) {
     return <img src={completedImage} alt="Render Complete" />;
   }

@@ -2,7 +2,7 @@ import * as THREE from 'three';
 import { HelperOptions } from '../types';
 import HexGrid from './HexGrid/HexGrid';
 
-export const addHelpers = (scene: THREE.Scene, object: THREE.Object3D | null, options: HelperOptions) => {
+export const addHelpers =(scene: THREE.Scene, object: THREE.Object3D | null, options: HelperOptions) => {
   scene.children = scene.children.filter(child => !(child instanceof THREE.GridHelper || child instanceof THREE.AxesHelper || child instanceof THREE.BoxHelper));
 
   if (options.gridHelper) {
