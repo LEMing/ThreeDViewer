@@ -14,7 +14,7 @@ class HexTile {
   createMesh(): THREE.Object3D {
     // Create a hexagonal shape
     const hexShape = new THREE.Shape();
-    const size = this.size - 0.5; // Tile size considering the borders
+    const size = this.size - 1; // Tile size considering the borders
     const angleStep = (Math.PI * 2) / 6; // Six sides
     for (let i = 0; i < 6; i++) {
       const x = size * Math.cos(i * angleStep);
@@ -29,11 +29,11 @@ class HexTile {
 
     // Extrusion parameters to create tile volume
     const extrudeSettings = {
-      depth: 1, // Tile thickness
+      depth: 4, // Tile thickness
       bevelEnabled: true,   // Enable beveling (chamfer)
-      bevelSize: 0.1,       // Bevel size
-      bevelThickness: 0.05, // Bevel thickness
-      bevelSegments: 3,     // Number of segments for smoothing the edge
+      bevelSize: 0.5,       // Bevel size
+      bevelThickness: 0.5, // Bevel thickness
+      bevelSegments: 6,     // Number of segments for smoothing the edge
     };
 
     // Create the extrusion

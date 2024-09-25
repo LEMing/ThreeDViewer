@@ -42,7 +42,6 @@ export class AnimationManager {
 
   private animate = (time: number) => {
     if (!this.isSceneActive && this.options.staticScene) return;
-    if (!this.isSceneActive) return;
 
     requestAnimationFrame(this.animate);
     if (this.options.animationLoop) {
@@ -54,6 +53,7 @@ export class AnimationManager {
       // @ts-ignore
       this.pathTracingManager.ptRenderer.updateCamera();
     }
+    this.renderer.shadowMap.needsUpdate = true;
 
     this.throttledRender();
   };

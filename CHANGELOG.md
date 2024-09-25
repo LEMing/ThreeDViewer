@@ -1,6 +1,10 @@
 Changelog
 =========
 
+0.9.1
+---
+* Fix bug with default static rendering
+
 0.9.0
 ---
 * Add ability to send an url as an input object
