@@ -1,6 +1,11 @@
 Changelog
 =========
 
+0.10.0
+---
+* Make light optional
+* Use threedgizmo 0.2.1
+
 0.9.1
 ---
 * Fix bug with default static rendering
