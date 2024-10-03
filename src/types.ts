@@ -35,16 +35,16 @@ export interface RendererOptions {
 }
 
 export interface LightningOptions {
-  ambientLight: {
+  ambientLight?: {
     color: string;
     intensity: number;
   };
-  hemisphereLight: {
+  hemisphereLight?: {
     skyColor: string;
     groundColor: string;
     intensity: number;
   };
-  directionalLight: {
+  directionalLight?: {
     color: string;
     intensity: number;
     position: THREE.Vector3;
